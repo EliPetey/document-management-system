@@ -31,3 +31,18 @@
     padding: 15px;
     margin-bottom: 15px;
 }
+.folder-structure-container {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 8px;
+    background-color: #f8f9fa;
+}
+
+.folder-structure {
+    font-family: monospace;
+    font-size: 12px;
+    white-space: pre;
+    margin: 0;
+}

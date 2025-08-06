@@ -13,6 +13,249 @@ document.addEventListener('DOMContentLoaded', function() {
     const classifyEndpoint = 'https://ya6wa8l0mh.execute-api.us-east-1.amazonaws.com/prod/classify';
     const moveFileEndpoint = 'https://ya6wa8l0mh.execute-api.us-east-1.amazonaws.com/prod/move-file';
     
+    
+    const fullFolderStructure = `Site (e.g., LHR086)
+├── 01_Technical_Documentation
+│   ├── 01_Drawings
+│   │   ├── Electrical
+│   │   │   ├── SLDs
+│   │   │   ├── MV_System
+│   │   │   ├── LV_System
+│   │   │   ├── Circuit_Schedules
+│   │   │   ├── Discrimination_Studies
+│   │   │   └── Earthing
+│   │   ├── Mechanical
+│   │   │   ├── HVAC
+│   │   │   ├── Cooling_Systems
+│   │   │   ├── Ventilation
+│   │   │   └── Piping
+│   │   ├── Architectural
+│   │   │   ├── Floor_Plans
+│   │   │   ├── General_Arrangement
+│   │   │   └── Room_Layouts
+│   │   ├── Fire_Protection
+│   │   └── Site_External
+│   │       └── Road_Markings_Signage
+│   │
+│   ├── 02_Equipment_Information
+│   │   ├── Generators
+│   │   │   ├── Specifications
+│   │   │   ├── Engine_Data
+│   │   │   └── Fuel_System
+│   │   ├── Electrical
+│   │   │   ├── Transformers
+│   │   │   ├── Switchgear
+│   │   │   ├── UPS_Systems
+│   │   │   └── Breaker_Settings
+│   │   ├── HVAC_Equipment
+│   │   │   ├── Direct_Air_Optimisers
+│   │   │   ├── CRAC_Units
+│   │   │   ├── AHUs
+│   │   │   └── Fan_Coil_Units
+│   │   ├── Building_Systems
+│   │   │   ├── Lifts
+│   │   │   ├── Loading_Bay
+│   │   │   └── Security_Systems
+│   │   └── Water_Systems
+│   │
+│   ├── 03_Blade_Room
+│   │   ├── Specifications
+│   │   ├── Controls
+│   │   ├── Operation_Documentation
+│   │   └── Training_Materials
+│   │
+│   ├── 04_BOM_Inventories
+│   │   ├── Equipment_BOM
+│   │   ├── Critical_Spares
+│   │   ├── Tools
+│   │   └── Chemical_Inventory
+│   │
+│   └── 05_Reference_Documentation
+│       ├── CSE_LSE_Guidelines
+│       ├── Design_Engineering
+│       └── Asset_Lists
+│
+├── 02_Operations
+│   ├── 01_Procedures
+│   │   ├── SOPs
+│   │   │   ├── Electrical
+│   │   │   ├── Mechanical
+│   │   │   ├── Fire_Systems
+│   │   │   ├── Controls
+│   │   │   └── Water_Systems
+│   │   ├── EOPs
+│   │   │   ├── Electrical
+│   │   │   ├── Mechanical
+│   │   │   ├── Fire_Systems
+│   │   │   ├── Controls
+│   │   │   └── Emergency_Response
+│   │   ├── MOPs
+│   │   └── Work_Instructions
+│   │
+│   ├── 02_Sequences_Of_Operation
+│   │   ├── HVAC_Systems
+│   │   ├── Electrical_Systems
+│   │   ├── Control_Systems
+│   │   ├── Fire_Systems
+│   │   └── Water_Systems
+│   │
+│   ├── 03_Training
+│   │   ├── Vendor_Training
+│   │   ├── Equipment_Training
+│   │   ├── Procedures_Training
+│   │   └── Safety_Training
+│   │
+│   ├── 04_Daily_Operations
+│   │   ├── Shift_Handovers
+│   │   ├── Walkrounds
+│   │   ├── Weekly_Calls
+│   │   └── Status_Reports
+│   │
+│   └── 05_MCM
+│       ├── Process_Documentation
+│       └── Requirements
+│
+├── 03_Maintenance
+│   ├── 01_PPM
+│   │   ├── Electrical
+│   │   │   ├── MV_Equipment
+│   │   │   ├── LV_Equipment
+│   │   │   └── UPS_Systems
+│   │   ├── Mechanical
+│   │   │   ├── HVAC_Systems
+│   │   │   ├── CRAC_Units
+│   │   │   └── Direct_Air_Optimisers
+│   │   ├── Generators
+│   │   └── Building_Systems
+│   │       ├── Lifts
+│   │       ├── Fire_Systems
+│   │       └── Loading_Bay
+│   │
+│   ├── 02_Equipment_Records
+│   │   ├── CRAC_Units
+│   │   ├── Direct_Air_Optimisers
+│   │   ├── Fan_Coil_Units
+│   │   ├── Generators
+│   │   ├── UPS_Systems
+│   │   ├── Building_Systems
+│   │   └── Variable_Frequency_Drives
+│   │
+│   ├── 03_Vendor_Service_Reports
+│   │   └── [By_Vendor_Name]
+│   │
+│   └── 04_Corrective_Maintenance
+│       ├── Completed_Works
+│       └── Outstanding_Issues
+│
+├── 04_Compliance
+│   ├── 01_Environmental
+│   │   ├── Generator_Compliance
+│   │   │   ├── Run_Logs
+│   │   │   ├── Fuel_Records
+│   │   │   └── SCR_Data
+│   │   ├── F-Gas_Management
+│   │   │   ├── Registers
+│   │   │   ├── Certificates
+│   │   │   └── Reports
+│   │   ├── Waste_Management
+│   │   └── COSHH
+│   │
+│   ├── 02_Health_and_Safety
+│   │   ├── Risk_Assessments
+│   │   ├── Fire_Safety
+│   │   ├── LOLER
+│   │   └── Equipment_Testing
+│   │
+│   ├── 03_Electrical_Compliance
+│   │   ├── Inspection_Reports
+│   │   ├── Certifications
+│   │   └── Electrical_Rules
+│   │
+│   ├── 04_Fire_Systems
+│   │   ├── Inspections
+│   │   ├── Testing_Records
+│   │   └── Certifications
+│   │
+│   └── 05_Water_Compliance
+│       ├── Legionella_Management
+│       ├── Water_Sampling
+│       └── Temperature_Checks
+│
+├── 05_Vendors
+│   ├── 01_Vendor_Information
+│   │   ├── Contact_Lists
+│   │   └── Escalation_Procedures
+│   │
+│   ├── 02_Vendor_Documentation
+│   │   └── [By_Vendor_Name]
+│   │       ├── Competencies
+│   │       ├── RAMS
+│   │       ├── Service_Reports
+│   │       └── Call-out_Records
+│   │
+│   └── 03_Vendor_Management
+│       ├── Onboarding
+│       ├── Contracts
+│       └── Purchase_Orders
+│
+├── 06_Projects
+│   ├── 01_Active_Projects
+│   │   └── [Project_Name]
+│   │
+│   ├── 02_Commissioning
+│   │   ├── FAT
+│   │   ├── SAT
+│   │   └── Handover
+│   │
+│   └── 03_Construction
+│       ├── Documentation
+│       └── Reports
+│
+└── 07_Administration
+    ├── 01_Access_Control
+    │   └── Door_Keys_Reference
+    │
+    ├── 02_Signage
+    │   ├── Layouts
+    │   ├── Quotes
+    │   └── Templates
+    │
+    ├── 03_Site_Management
+    │   ├── Site_Launch_Plan
+    │   └── Property_Management
+    │
+    └── 04_Permits
+        ├── E-Permits
+        ├── High_Risk_Works
+        └── Templates`;
+
+    // Add the highlightPath function here
+    function highlightPath(folderStructure, selectedPath) {
+        // Split the selected path into segments
+        const pathSegments = selectedPath.split('/');
+        
+        // Process the folder structure to highlight the selected path
+        const lines = folderStructure.split('\n');
+        const highlightedLines = lines.map(line => {
+            // Check if this line contains all segments of the selected path
+            let containsPath = true;
+            for (const segment of pathSegments) {
+                if (segment && !line.includes(segment)) {
+                    containsPath = false;
+                    break;
+                }
+            }
+            
+            // Highlight the line if it contains the path
+            if (containsPath) {
+                return `<span class="bg-success text-white">${line}</span>`;
+            }
+            return line;
+        });
+        
+        return highlightedLines.join('\n');
+    }
+        
     // Selected files
     let selectedFiles = [];
     
@@ -97,101 +340,118 @@ document.addEventListener('DOMContentLoaded', function() {
         progressContainer.style.display = 'block';
         
         for (let i = 0; i < selectedFiles.length; i++) {
-            const file = selectedFiles[i];
-            const statusElement = document.getElementById(`status-${i}`);
-            
-            try {
-                statusElement.textContent = 'Preparing upload...';
-                statusElement.className = 'file-status text-primary';
-                
-                // Update progress bar
-                progressBar.style.width = `${(i / selectedFiles.length) * 30}%`;
-                
-                // Step 1: Get presigned URL
-                const presignedResponse = await fetch(presignedUrlEndpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        filename: file.name,
-                        contentType: file.type
-                    })
-                });
-                
-                if (!presignedResponse.ok) {
-                    throw new Error(`Failed to get upload URL: ${presignedResponse.status}`);
-                }
-                
-                const presignedData = await presignedResponse.json();
-                const { uploadUrl, key } = presignedData;
-                
-                // Step 2: Upload file directly to S3 using presigned URL
-                statusElement.textContent = 'Uploading to S3...';
-                const uploadResponse = await fetch(uploadUrl, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': file.type
-                    },
-                    credentials: 'include',
-                    body: file
-                });
-                
-                if (!uploadResponse.ok) {
-                    throw new Error(`Failed to upload file: ${uploadResponse.status}`);
-                }
-                
-                progressBar.style.width = `${(i / selectedFiles.length) * 60 + 30}%`;
-                
-                // Step 3: Trigger classification
-                statusElement.textContent = 'Classifying...';
-                const classifyResponse = await fetch(classifyEndpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        key: key,
-                        filename: file.name
-                    })
-                });
-                
-                if (!classifyResponse.ok) {
-                    throw new Error(`Classification failed: ${classifyResponse.status}`);
-                }
-                
-                const classifyResult = await classifyResponse.json();
-                
-                // Show confirmation dialog
-                statusElement.textContent = 'Awaiting confirmation';
-                const confirmationDiv = document.createElement('div');
-                confirmationDiv.className = 'mt-2';
-                confirmationDiv.innerHTML = `
-                    <div class="input-group">
-                        <input type="text" class="form-control" value="${classifyResult.suggestedPath}" id="path-${i}">
-                        <button class="btn btn-success confirm-btn" data-index="${i}" data-key="${classifyResult.key}">Accept</button>
-                        <button class="btn btn-secondary edit-btn" data-index="${i}">Edit</button>
-                    </div>
-                `;
-                statusElement.parentNode.appendChild(confirmationDiv);
-                
-            } catch (error) {
-                console.error(`Error processing ${file.name}:`, error);
-                statusElement.textContent = 'Error';
-                statusElement.className = 'file-status text-danger';
-                
-                // Add error details
-                const errorItem = document.createElement('div');
-                errorItem.className = 'mt-1 small text-danger';
-                errorItem.textContent = error.message || 'Failed to process file';
-                statusElement.parentNode.appendChild(errorItem);
+    const file = selectedFiles[i];
+    const statusElement = document.getElementById(`status-${i}`);
+    
+    try {
+        statusElement.textContent = 'Preparing upload...';
+        statusElement.className = 'file-status text-primary';
+        
+        // Update progress bar
+        progressBar.style.width = `${(i / selectedFiles.length) * 30}%`;
+        
+        // Step 1: Get presigned URL
+        const presignedResponse = await fetch(presignedUrlEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                filename: file.name,
+                contentType: file.type
+            })
+        });
+        
+        if (!presignedResponse.ok) {
+            throw new Error(`Failed to get upload URL: ${presignedResponse.status}`);
+        }
+        
+        const presignedData = await presignedResponse.json();
+        const { uploadUrl, key } = presignedData;
+        
+        // Step 2: Upload file directly to S3 using presigned URL
+        statusElement.textContent = 'Uploading to S3...';
+        const uploadResponse = await fetch(uploadUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': file.type
+            },
+            credentials: 'include',
+            body: file
+        });
+        
+        if (!uploadResponse.ok) {
+            throw new Error(`Failed to upload file: ${uploadResponse.status}`);
+        }
+        
+        progressBar.style.width = `${(i / selectedFiles.length) * 60 + 30}%`;
+        
+        // Step 3: Trigger classification
+        statusElement.textContent = 'Classifying...';
+        const classifyResponse = await fetch(classifyEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                key: key,
+                filename: file.name
+            })
+        });
+        
+        if (!classifyResponse.ok) {
+            throw new Error(`Classification failed: ${classifyResponse.status}`);
+        }
+        
+        const classifyResult = await classifyResponse.json();
+        
+        // Show confirmation dialog
+        statusElement.textContent = 'Awaiting confirmation';
+        const confirmationDiv = document.createElement('div');
+        confirmationDiv.className = 'mt-2';
+        
+        // Extract just the path without any explanation text
+        let suggestedPath = classifyResult.suggestedPath;
+        // If the result contains extra text, try to extract just the path
+        if (suggestedPath.includes('/')) {
+            // Find the first occurrence of something that looks like a path
+            const pathMatch = suggestedPath.match(/[A-Za-z0-9_]+\/[A-Za-z0-9_\/]+/);
+            if (pathMatch) {
+                suggestedPath = pathMatch[0];
             }
         }
         
-        // Complete progress bar
-        progressBar.style.width = '100%';
+        confirmationDiv.innerHTML = `
+            <div class="input-group">
+                <input type="text" class="form-control" value="${suggestedPath}" id="path-${i}">
+                <button class="btn btn-success confirm-btn" data-index="${i}" data-key="${classifyResult.key}">Accept</button>
+                <button class="btn btn-secondary edit-btn" data-index="${i}">Edit</button>
+            </div>
+            <div class="mt-2 folder-structure-container">
+                <small class="text-muted">Suggested location in folder structure:</small>
+                <pre class="folder-structure">${highlightPath(fullFolderStructure, suggestedPath)}</pre>
+            </div>
+        `;
+        
+        statusElement.parentNode.appendChild(confirmationDiv);
+    } catch (error) {  // Add this missing catch block
+        console.error(`Error processing ${file.name}:`, error);
+        statusElement.textContent = 'Error';
+        statusElement.className = 'file-status text-danger';
+        
+        // Add error details
+        const errorItem = document.createElement('div');
+        errorItem.className = 'mt-1 small text-danger';
+        errorItem.textContent = error.message || 'Failed to process file';
+        statusElement.parentNode.appendChild(errorItem);
+    }
+}
+
+// Complete progress bar
+progressBar.style.width = '100%';
+
     });
     
     // Handle confirmation buttons
