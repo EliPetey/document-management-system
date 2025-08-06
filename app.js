@@ -113,6 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     headers: {
                         'Content-Type': 'application/json'
                     },
+                    credentials: 'include',
                     body: JSON.stringify({
                         filename: file.name,
                         contentType: file.type
@@ -133,6 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     headers: {
                         'Content-Type': file.type
                     },
+                    credentials: 'include',
                     body: file
                 });
                 
@@ -149,6 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     headers: {
                         'Content-Type': 'application/json'
                     },
+                    credentials: 'include',
                     body: JSON.stringify({
                         key: key,
                         filename: file.name
@@ -208,6 +211,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     headers: {
                         'Content-Type': 'application/json'
                     },
+                    credentials: 'include',
                     body: JSON.stringify({
                         key: key,
                         targetPath: finalPath,
