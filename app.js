@@ -1,29 +1,4 @@
-// Initialize AWS Amplify
 document.addEventListener('DOMContentLoaded', function() {
-    // Configure Amplify
-    const awsConfig = {
-        Auth: {
-            identityPoolId: 'YOUR_IDENTITY_POOL_ID', // replace with your identity pool ID
-            region: 'YOUR_REGION' // replace with your region
-        },
-        Storage: {
-            AWSS3: {
-                bucket: 'YOUR_S3_BUCKET_NAME', // replace with your bucket name
-                region: 'YOUR_REGION' // replace with your region
-            }
-        },
-        API: {
-            endpoints: [
-                {
-                    name: "documentApi",
-                    endpoint: "00pvjqoqt9", // replace with your API Gateway endpoint
-                    region: "us-east-1" // replace with your region
-                }
-            ]
-        }
-    };
-    
-    
     // Elements
     const dropArea = document.getElementById('drop-area');
     const fileInput = document.getElementById('fileInput');
@@ -32,6 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressBar = document.querySelector('.progress-bar');
     const progressContainer = document.getElementById('upload-progress');
     const resultsList = document.getElementById('resultsList');
+    
+    // API endpoint - replace with your actual API Gateway endpoint
+    const apiEndpoint = 'https://00pvjqoqt9.execute-api.us-east-1.amazonaws.com/prod/classify';
     
     // Selected files
     let selectedFiles = [];
@@ -109,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
     
-    // Handle upload button
+    // Handle upload button using standard fetch
     uploadBtn.addEventListener('click', async () => {
         if (selectedFiles.length === 0) return;
         
@@ -128,21 +106,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 const progress = ((i + 0.5) / selectedFiles.length) * 100;
                 progressBar.style.width = `${progress}%`;
                 
-                // Upload file to S3 temp location
-                const tempKey = `temp/${Date.now()}-${file.name}`;
-                await AWS.Amplify.Storage.put(tempKey, file, {
-                    contentType: file.type
+                // Create a FormData object to send the file
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('filename', file.name);
+                
+                // Send the file to your API endpoint
+                const response = await fetch(apiEndpoint, {
+                    method: 'POST',
+                    body: formData
                 });
                 
-                statusElement.textContent = 'Classifying...';
+                if (!response.ok) {
+                    throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+                }
                 
-                // Call API to process with Bedrock
-                const response = await AWS.Amplify.API.post('documentApi', '/classify', {
-                    body: {
-                        key: tempKey,
-                        filename: file.name
-                    }
-                });
+                const result = await response.json();
                 
                 statusElement.textContent = 'Classified & Stored';
                 statusElement.className = 'file-status text-success';
@@ -150,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Add classification result
                 const resultItem = document.createElement('div');
                 resultItem.className = 'mt-1 small text-muted';
-                resultItem.textContent = `Stored in: ${response.path}`;
+                resultItem.textContent = `Stored in: ${result.path || 'Appropriate folder'}`;
                 statusElement.parentNode.appendChild(resultItem);
                 
             } catch (error) {
@@ -172,8 +151,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Reset after processing
         setTimeout(() => {
             uploadBtn.disabled = false;
-            selectedFiles = [];
-            fileInput.value = '';
+            progressContainer.style.display = 'none';
+            // Don't reset the files list so users can see the results
         }, 3000);
     });
 });
