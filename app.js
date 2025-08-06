@@ -238,51 +238,47 @@ document.addEventListener('DOMContentLoaded', function() {
         return folderStructure; // No path to highlight
     }
     
+    // Get the final segment (folder) to highlight with animation
+    const finalSegment = pathSegments[pathSegments.length - 1];
+    
     // Process the folder structure line by line
     const lines = folderStructure.split('\n');
     const highlightedLines = [];
     
-    // Keep track of context to determine which folder to highlight
-    let currentDepth = 0;
-    let matchingPath = false;
-    let pathDepth = 0;
-    
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         
-        // Determine the indentation level (depth) of this line
-        const indent = line.search(/\S|$/);
-        const currentLineDepth = Math.floor(indent / 4); // Assuming 4 spaces per level
-        
-        // Reset tracking when we go back up the tree
-        if (currentLineDepth < currentDepth) {
-            matchingPath = false;
-        }
-        
-        currentDepth = currentLineDepth;
-        
-        // Check if this line contains the current segment we're looking for
-        const segmentIndex = pathDepth < pathSegments.length ? pathSegments[pathDepth] : null;
-        
-        if (segmentIndex && line.includes(segmentIndex)) {
-            // Found a potential match for the current segment
+        // Check if this line contains the final segment
+        if (line.includes(finalSegment)) {
+            // Make sure it's the exact folder name (not a substring)
+            const trimmedLine = line.trim().replace(/├──|│|└──/g, '').trim();
             
-            // Check if this is a full match (not a substring of another word)
-            const lineContent = line.trim().replace(/├──|│|└──/g, '').trim();
-            
-            if (lineContent === segmentIndex || lineContent.startsWith(segmentIndex + ' ')) {
-                // This is the segment we're looking for
-                matchingPath = true;
-                pathDepth++;
-                
-                // Highlight this line
-                highlightedLines.push(`<span class="highlight-path">${line}</span>`);
+            if (trimmedLine === finalSegment || trimmedLine.startsWith(finalSegment + ' ')) {
+                // This is the final folder - add special class for animation
+                highlightedLines.push(`<span class="final-folder">${line}</span>`);
                 continue;
             }
         }
         
-        // Add line without highlighting
-        highlightedLines.push(line);
+        // Check for other segments in the path (non-final folders)
+        let isPathSegment = false;
+        for (let j = 0; j < pathSegments.length - 1; j++) {
+            const segment = pathSegments[j];
+            if (line.includes(segment)) {
+                const trimmedLine = line.trim().replace(/├──|│|└──/g, '').trim();
+                if (trimmedLine === segment || trimmedLine.startsWith(segment + ' ')) {
+                    isPathSegment = true;
+                    break;
+                }
+            }
+        }
+        
+        // Add regular highlight for path segments, no highlight for others
+        if (isPathSegment) {
+            highlightedLines.push(`<span class="highlight-path">${line}</span>`);
+        } else {
+            highlightedLines.push(line);
+        }
     }
     
     return highlightedLines.join('\n');
