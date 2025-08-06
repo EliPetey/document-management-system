@@ -231,30 +231,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add the highlightPath function here
     function highlightPath(folderStructure, selectedPath) {
-        // Split the selected path into segments
-        const pathSegments = selectedPath.split('/');
-        
-        // Process the folder structure to highlight the selected path
-        const lines = folderStructure.split('\n');
-        const highlightedLines = lines.map(line => {
-            // Check if this line contains all segments of the selected path
-            let containsPath = true;
-            for (const segment of pathSegments) {
-                if (segment && !line.includes(segment)) {
-                    containsPath = false;
-                    break;
+    // Split the selected path into segments and clean them
+    const pathSegments = selectedPath.split('/').filter(segment => segment.trim() !== '');
+    
+    // Process the folder structure line by line
+    const lines = folderStructure.split('\n');
+    const highlightedLines = [];
+    
+    for (const line of lines) {
+        // Check if this line contains the last segment of the path (most specific part)
+        const lastSegment = pathSegments[pathSegments.length - 1];
+        if (lastSegment && line.includes(lastSegment)) {
+            // Check if it also contains earlier segments or is at the right level
+            let isMatch = true;
+            let indent = line.search(/\S|$/); // Find the indentation level
+            
+            // If this is a deeply nested path, make sure we're matching the right line
+            if (pathSegments.length > 1) {
+                for (let i = pathSegments.length - 2; i >= 0; i--) {
+                    if (!folderStructure.includes(pathSegments[i])) {
+                        isMatch = false;
+                        break;
+                    }
                 }
             }
             
-            // Highlight the line if it contains the path
-            if (containsPath) {
-                return `<span class="bg-success text-white">${line}</span>`;
+            if (isMatch) {
+                highlightedLines.push(`<span class="highlight-path">${line}</span>`);
+                continue;
             }
-            return line;
-        });
-        
-        return highlightedLines.join('\n');
+        }
+        highlightedLines.push(line);
     }
+    
+    return highlightedLines.join('\n');
+}
         
     // Selected files
     let selectedFiles = [];
@@ -424,16 +435,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         confirmationDiv.innerHTML = `
-            <div class="input-group">
-                <input type="text" class="form-control" value="${suggestedPath}" id="path-${i}">
-                <button class="btn btn-success confirm-btn" data-index="${i}" data-key="${classifyResult.key}">Accept</button>
-                <button class="btn btn-secondary edit-btn" data-index="${i}">Edit</button>
-            </div>
-            <div class="mt-2 folder-structure-container">
-                <small class="text-muted">Suggested location in folder structure:</small>
-                <pre class="folder-structure">${highlightPath(fullFolderStructure, suggestedPath)}</pre>
-            </div>
-        `;
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" value="${suggestedPath}" id="path-${i}">
+        <div class="input-group-append">
+            <button class="btn btn-success confirm-btn" data-index="${i}" data-key="${classifyResult.key}">Accept</button>
+            <button class="btn btn-secondary edit-btn" data-index="${i}">Edit</button>
+        </div>
+    </div>
+    <div class="folder-structure-container">
+        <small class="text-muted">Suggested location in folder structure:</small>
+        <pre class="folder-structure">${highlightPath(fullFolderStructure, suggestedPath)}</pre>
+    </div>
+`;
         
         statusElement.parentNode.appendChild(confirmationDiv);
     } catch (error) {  // Add this missing catch block

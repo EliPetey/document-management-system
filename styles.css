@@ -31,13 +31,16 @@
     padding: 15px;
     margin-bottom: 15px;
 }
+
 .folder-structure-container {
-    max-height: 200px;
+    max-height: 400px; /* Increased from 200px for more visibility */
     overflow-y: auto;
     border: 1px solid #e0e0e0;
     border-radius: 4px;
     padding: 8px;
     background-color: #f8f9fa;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .folder-structure {
@@ -45,4 +48,13 @@
     font-size: 12px;
     white-space: pre;
     margin: 0;
+    width: 100%;
+}
+
+/* New class for highlighting */
+.highlight-path {
+    background-color: #ffc107; /* Yellow background */
+    padding: 2px 0;
+    display: inline-block;
+    width: 100%;
 }
