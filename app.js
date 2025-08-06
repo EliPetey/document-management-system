@@ -8,9 +8,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressContainer = document.getElementById('upload-progress');
     const resultsList = document.getElementById('resultsList');
     
-    // API endpoint - replace with your actual API Gateway endpoint
-    const apiEndpoint = 'https://00pvjqoqt9.execute-api.us-east-1.amazonaws.com/prod/classify';
-    
+    // API endpoints - replace with your actual API Gateway endpoints
+    const presignedUrlEndpoint = 'https://00pvjqoqt9.execute-api.us-east-1.amazonaws.com/prod/presigned-url';
+    const classifyEndpoint = 'https://00pvjqoqt9.execute-api.us-east-1.amazonaws.com/prod/classify';
+    const moveFileEndpoint = 'https://00pvjqoqt9.execute-api.us-east-1.amazonaws.com/prod/move-file';
+
     // Selected files
     let selectedFiles = [];
     
@@ -87,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
     
-    // Handle upload button using standard fetch
+    // Handle upload button using presigned URLs
     uploadBtn.addEventListener('click', async () => {
         if (selectedFiles.length === 0) return;
         
@@ -99,37 +101,74 @@ document.addEventListener('DOMContentLoaded', function() {
             const statusElement = document.getElementById(`status-${i}`);
             
             try {
-                statusElement.textContent = 'Uploading...';
+                statusElement.textContent = 'Preparing upload...';
                 statusElement.className = 'file-status text-primary';
                 
                 // Update progress bar
-                const progress = ((i + 0.5) / selectedFiles.length) * 100;
-                progressBar.style.width = `${progress}%`;
+                progressBar.style.width = `${(i / selectedFiles.length) * 30}%`;
                 
-                // Create a FormData object to send the file
-                const formData = new FormData();
-                formData.append('file', file);
-                formData.append('filename', file.name);
-                
-                // Send the file to your API endpoint
-                const response = await fetch(apiEndpoint, {
+                // Step 1: Get presigned URL
+                const presignedResponse = await fetch(presignedUrlEndpoint, {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        filename: file.name,
+                        contentType: file.type
+                    })
                 });
                 
-                if (!response.ok) {
-                    throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+                if (!presignedResponse.ok) {
+                    throw new Error(`Failed to get upload URL: ${presignedResponse.status}`);
                 }
                 
-                const result = await response.json();
+                const presignedData = await presignedResponse.json();
+                const { uploadUrl, key } = presignedData;
                 
+                // Step 2: Upload file directly to S3 using presigned URL
+                statusElement.textContent = 'Uploading to S3...';
+                const uploadResponse = await fetch(uploadUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': file.type
+                    },
+                    body: file
+                });
+                
+                if (!uploadResponse.ok) {
+                    throw new Error(`Failed to upload file: ${uploadResponse.status}`);
+                }
+                
+                progressBar.style.width = `${(i / selectedFiles.length) * 60 + 30}%`;
+                
+                // Step 3: Trigger classification
+                statusElement.textContent = 'Classifying...';
+                const classifyResponse = await fetch(classifyEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        key: key,
+                        filename: file.name
+                    })
+                });
+                
+                if (!classifyResponse.ok) {
+                    throw new Error(`Classification failed: ${classifyResponse.status}`);
+                }
+                
+                const classifyResult = await classifyResponse.json();
+                
+                // Update UI with result
                 statusElement.textContent = 'Classified & Stored';
                 statusElement.className = 'file-status text-success';
                 
                 // Add classification result
                 const resultItem = document.createElement('div');
                 resultItem.className = 'mt-1 small text-muted';
-                resultItem.textContent = `Stored in: ${result.path || 'Appropriate folder'}`;
+                resultItem.textContent = `Stored in: ${classifyResult.path || 'Appropriate folder'}`;
                 statusElement.parentNode.appendChild(resultItem);
                 
             } catch (error) {
@@ -152,7 +191,6 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             uploadBtn.disabled = false;
             progressContainer.style.display = 'none';
-            // Don't reset the files list so users can see the results
         }, 3000);
     });
 });
