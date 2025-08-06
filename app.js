@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
     
-    AWS.Amplify.configure(awsConfig);
     
     // Elements
     const dropArea = document.getElementById('drop-area');
