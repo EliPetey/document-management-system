@@ -8,11 +8,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressContainer = document.getElementById('upload-progress');
     const resultsList = document.getElementById('resultsList');
     
-    // API endpoints - replace with your actual API Gateway endpoints
+    // API endpoints
     const presignedUrlEndpoint = 'https://00pvjqoqt9.execute-api.us-east-1.amazonaws.com/prod/presigned-url';
     const classifyEndpoint = 'https://00pvjqoqt9.execute-api.us-east-1.amazonaws.com/prod/classify';
     const moveFileEndpoint = 'https://00pvjqoqt9.execute-api.us-east-1.amazonaws.com/prod/move-file';
-
+    
     // Selected files
     let selectedFiles = [];
     
@@ -161,15 +161,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const classifyResult = await classifyResponse.json();
                 
-                // Update UI with result
-                statusElement.textContent = 'Classified & Stored';
-                statusElement.className = 'file-status text-success';
-                
-                // Add classification result
-                const resultItem = document.createElement('div');
-                resultItem.className = 'mt-1 small text-muted';
-                resultItem.textContent = `Stored in: ${classifyResult.path || 'Appropriate folder'}`;
-                statusElement.parentNode.appendChild(resultItem);
+                // Show confirmation dialog
+                statusElement.textContent = 'Awaiting confirmation';
+                const confirmationDiv = document.createElement('div');
+                confirmationDiv.className = 'mt-2';
+                confirmationDiv.innerHTML = `
+                    <div class="input-group">
+                        <input type="text" class="form-control" value="${classifyResult.suggestedPath}" id="path-${i}">
+                        <button class="btn btn-success confirm-btn" data-index="${i}" data-key="${classifyResult.key}">Accept</button>
+                        <button class="btn btn-secondary edit-btn" data-index="${i}">Edit</button>
+                    </div>
+                `;
+                statusElement.parentNode.appendChild(confirmationDiv);
                 
             } catch (error) {
                 console.error(`Error processing ${file.name}:`, error);
@@ -186,11 +189,67 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Complete progress bar
         progressBar.style.width = '100%';
+    });
+    
+    // Handle confirmation buttons
+    document.addEventListener('click', async function(e) {
+        if (e.target.classList.contains('confirm-btn')) {
+            const index = e.target.dataset.index;
+            const key = e.target.dataset.key;
+            const finalPath = document.getElementById(`path-${index}`).value;
+            const statusElement = document.getElementById(`status-${index}`);
+            
+            try {
+                statusElement.textContent = 'Moving file...';
+                
+                                // Call API to move file to final location
+                const moveResponse = await fetch(moveFileEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        key: key,
+                        targetPath: finalPath,
+                        filename: selectedFiles[index].name
+                    })
+                });
+                
+                if (!moveResponse.ok) {
+                    throw new Error(`Failed to move file: ${moveResponse.status}`);
+                }
+                
+                const moveResult = await moveResponse.json();
+                
+                // Update UI with result
+                statusElement.textContent = 'Classified & Stored';
+                statusElement.className = 'file-status text-success';
+                
+                // Replace confirmation with result
+                e.target.parentNode.parentNode.innerHTML = `
+                    <div class="mt-1 small text-success">
+                        Stored in: ${moveResult.path}
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error(`Error finalizing ${selectedFiles[index].name}:`, error);
+                statusElement.textContent = 'Error';
+                statusElement.className = 'file-status text-danger';
+                
+                // Add error details
+                const errorItem = document.createElement('div');
+                errorItem.className = 'mt-1 small text-danger';
+                errorItem.textContent = error.message || 'Failed to finalize file';
+                e.target.parentNode.parentNode.appendChild(errorItem);
+            }
+        }
         
-        // Reset after processing
-        setTimeout(() => {
-            uploadBtn.disabled = false;
-            progressContainer.style.display = 'none';
-        }, 3000);
+        if (e.target.classList.contains('edit-btn')) {
+            const index = e.target.dataset.index;
+            const pathInput = document.getElementById(`path-${index}`);
+            pathInput.focus();
+            pathInput.select();
+        }
     });
 });
