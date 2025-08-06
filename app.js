@@ -16,8 +16,8 @@ document.addEventListener('DOMContentLoaded', function() {
             endpoints: [
                 {
                     name: "documentApi",
-                    endpoint: "YOUR_API_ENDPOINT", // replace with your API Gateway endpoint
-                    region: "YOUR_REGION" // replace with your region
+                    endpoint: "00pvjqoqt9", // replace with your API Gateway endpoint
+                    region: "us-east-1" // replace with your region
                 }
             ]
         }
