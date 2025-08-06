@@ -9,9 +9,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultsList = document.getElementById('resultsList');
     
     // API endpoints
-    const presignedUrlEndpoint = 'https://00pvjqoqt9.execute-api.us-east-1.amazonaws.com/prod/presigned-url';
-    const classifyEndpoint = 'https://00pvjqoqt9.execute-api.us-east-1.amazonaws.com/prod/classify';
-    const moveFileEndpoint = 'https://00pvjqoqt9.execute-api.us-east-1.amazonaws.com/prod/move-file';
+    const presignedUrlEndpoint = 'https://p6utaf365g.execute-api.us-east-1.amazonaws.com/prod/presigned-url';
+    const classifyEndpoint = 'https://p6utaf365g.execute-api.us-east-1.amazonaws.com/prod/classify';
+    const moveFileEndpoint = 'https://p6utaf365g.execute-api.us-east-1.amazonaws.com/prod/move-file';
     
     // Selected files
     let selectedFiles = [];
