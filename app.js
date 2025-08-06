@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const moveFileEndpoint = 'https://ya6wa8l0mh.execute-api.us-east-1.amazonaws.com/prod/move-file';
     
     
-    const fullFolderStructure = `Site (e.g., LHR086)
+    const fullFolderStructure = `Site (LHR086)
 ├── 01_Technical_Documentation
 │   ├── 01_Drawings
 │   │   ├── Electrical
@@ -231,36 +231,57 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add the highlightPath function here
     function highlightPath(folderStructure, selectedPath) {
-    // Split the selected path into segments and clean them
+    // Split the selected path into segments
     const pathSegments = selectedPath.split('/').filter(segment => segment.trim() !== '');
+    
+    if (pathSegments.length === 0) {
+        return folderStructure; // No path to highlight
+    }
     
     // Process the folder structure line by line
     const lines = folderStructure.split('\n');
     const highlightedLines = [];
     
-    for (const line of lines) {
-        // Check if this line contains the last segment of the path (most specific part)
-        const lastSegment = pathSegments[pathSegments.length - 1];
-        if (lastSegment && line.includes(lastSegment)) {
-            // Check if it also contains earlier segments or is at the right level
-            let isMatch = true;
-            let indent = line.search(/\S|$/); // Find the indentation level
+    // Keep track of context to determine which folder to highlight
+    let currentDepth = 0;
+    let matchingPath = false;
+    let pathDepth = 0;
+    
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        
+        // Determine the indentation level (depth) of this line
+        const indent = line.search(/\S|$/);
+        const currentLineDepth = Math.floor(indent / 4); // Assuming 4 spaces per level
+        
+        // Reset tracking when we go back up the tree
+        if (currentLineDepth < currentDepth) {
+            matchingPath = false;
+        }
+        
+        currentDepth = currentLineDepth;
+        
+        // Check if this line contains the current segment we're looking for
+        const segmentIndex = pathDepth < pathSegments.length ? pathSegments[pathDepth] : null;
+        
+        if (segmentIndex && line.includes(segmentIndex)) {
+            // Found a potential match for the current segment
             
-            // If this is a deeply nested path, make sure we're matching the right line
-            if (pathSegments.length > 1) {
-                for (let i = pathSegments.length - 2; i >= 0; i--) {
-                    if (!folderStructure.includes(pathSegments[i])) {
-                        isMatch = false;
-                        break;
-                    }
-                }
-            }
+            // Check if this is a full match (not a substring of another word)
+            const lineContent = line.trim().replace(/├──|│|└──/g, '').trim();
             
-            if (isMatch) {
+            if (lineContent === segmentIndex || lineContent.startsWith(segmentIndex + ' ')) {
+                // This is the segment we're looking for
+                matchingPath = true;
+                pathDepth++;
+                
+                // Highlight this line
                 highlightedLines.push(`<span class="highlight-path">${line}</span>`);
                 continue;
             }
         }
+        
+        // Add line without highlighting
         highlightedLines.push(line);
     }
     
@@ -442,8 +463,11 @@ document.addEventListener('DOMContentLoaded', function() {
             <button class="btn btn-secondary edit-btn" data-index="${i}">Edit</button>
         </div>
     </div>
+    <div class="small mb-2">
+        <strong>AI-suggested path:</strong> ${suggestedPath}
+    </div>
     <div class="folder-structure-container">
-        <small class="text-muted">Suggested location in folder structure:</small>
+        <small class="text-muted">Folder structure (suggested location highlighted):</small>
         <pre class="folder-structure">${highlightPath(fullFolderStructure, suggestedPath)}</pre>
     </div>
 `;
