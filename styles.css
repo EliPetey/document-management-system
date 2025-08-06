@@ -54,25 +54,24 @@
 }
 
 .highlight-path {
-    background-color: #ffeb3b;
+    background-color: #fff9c4; /* Light yellow for parent folders */
     display: inline-block;
     width: 100%;
     font-weight: bold;
     color: #000;
 }
 
-/* Subtle flashing animation for the final folder */
+/* More pronounced flashing animation for the final folder */
 .final-folder {
-    background-color: #ffeb3b;
     display: inline-block;
     width: 100%;
     font-weight: bold;
     color: #000;
-    animation: subtle-flash 2s infinite;
+    animation: folder-flash 1.5s infinite;
 }
 
-@keyframes subtle-flash {
-    0% { background-color: #ffeb3b; }
-    50% { background-color: #fff176; }
-    100% { background-color: #ffeb3b; }
+@keyframes folder-flash {
+    0% { background-color: #ffeb3b; } /* Yellow */
+    50% { background-color: #fdd835; } /* Amber */
+    100% { background-color: #ffeb3b; } /* Yellow */
 }
