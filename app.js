@@ -203,60 +203,58 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to highlight the path in the folder structure
     function highlightPath(folderStructure, selectedPath) {
-        if (!selectedPath) return folderStructure;
+    // If there's no path, just return the original structure
+    if (!selectedPath) {
+        return folderStructure;
+    }
+    
+    // Split the path into segments
+    const pathSegments = selectedPath.split('/');
+    
+    // Process the folder structure line by line
+    const lines = folderStructure.split('\n');
+    const result = [];
+    
+    // Process each line
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const trimmedLine = line.trim();
         
-        // Split the path into segments and clean them
-        const pathSegments = selectedPath.split('/').filter(s => s.trim() !== '');
-        if (pathSegments.length === 0) return folderStructure;
+        // Check if this line is part of our path
+        let isPartOfPath = false;
+        let isFinalFolder = false;
         
-        // Process line by line
-        const lines = folderStructure.split('\n');
-        const result = [];
-        
-        // Match exact segments to avoid highlighting wrong folders with same name
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i];
-            // Calculate indent level
-            const indent = line.search(/\S|$/);
+        // Check each segment of the path
+        for (let j = 0; j < pathSegments.length; j++) {
+            const segment = pathSegments[j];
             
-            // Check if this line contains any of our path segments
-            let matchFound = false;
-            let isFinalSegment = false;
-            
-            // Extract the folder name from the line
-            const folderNameMatch = line.trim().match(/^[├└]── (.+)$/) || line.trim().match(/^(.+)$/);
-            const folderName = folderNameMatch ? folderNameMatch[1].trim() : '';
-            
-            // Check if this folder matches any segment in our path
-            for (let j = 0; j < pathSegments.length; j++) {
-                if (folderName === pathSegments[j]) {
-                    // Check if this is the correct level for this segment
-                    const expectedIndent = j * 4; // 4 spaces per level
-                    
-                    if (Math.abs(indent - expectedIndent) <= 4) { // Allow some flexibility
-                        matchFound = true;
-                        isFinalSegment = (j === pathSegments.length - 1);
-                        break;
-                    }
+            // If this line contains the segment name (with proper tree characters removed)
+            if (trimmedLine.endsWith(segment) || trimmedLine === segment) {
+                isPartOfPath = true;
+                
+                // If this is the final segment, mark it for flashing
+                if (j === pathSegments.length - 1) {
+                    isFinalFolder = true;
                 }
-            }
-            
-            if (matchFound) {
-                if (isFinalSegment) {
-                    // This is the final folder - add flashing highlight
-                    result.push(`<span class="final-folder-highlight">${line}</span>`);
-                } else {
-                    // This is a parent folder in the path - add regular highlight
-                    result.push(`<span class="folder-path-highlight">${line}</span>`);
-                }
-            } else {
-                // Not part of our path
-                result.push(line);
+                break;
             }
         }
         
-        return result.join('\n');
+        // Apply highlighting based on matching
+        if (isFinalFolder) {
+            // Final folder - add flashing highlight
+            result.push(`<span class="final-folder-highlight">${line}</span>`);
+        } else if (isPartOfPath) {
+            // Parent folder - add regular highlight
+            result.push(`<span class="folder-path-highlight">${line}</span>`);
+        } else {
+            // Regular line - no highlight
+            result.push(line);
+        }
     }
+    
+    return result.join('\n');
+}
     
     // Selected files
     let selectedFiles = [];
