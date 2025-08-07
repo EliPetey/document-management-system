@@ -36,7 +36,6 @@ document.addEventListener('DOMContentLoaded', function() {
 │   │   ├── Fire_Protection
 │   │   └── Site_External
 │   │       └── Road_Markings_Signage
-│   │
 │   ├── 02_Equipment_Information
 │   │   ├── Generators
 │   │   │   ├── Specifications
@@ -57,24 +56,20 @@ document.addEventListener('DOMContentLoaded', function() {
 │   │   │   ├── Loading_Bay
 │   │   │   └── Security_Systems
 │   │   └── Water_Systems
-│   │
 │   ├── 03_Blade_Room
 │   │   ├── Specifications
 │   │   ├── Controls
 │   │   ├── Operation_Documentation
 │   │   └── Training_Materials
-│   │
 │   ├── 04_BOM_Inventories
 │   │   ├── Equipment_BOM
 │   │   ├── Critical_Spares
 │   │   ├── Tools
 │   │   └── Chemical_Inventory
-│   │
 │   └── 05_Reference_Documentation
 │       ├── CSE_LSE_Guidelines
 │       ├── Design_Engineering
 │       └── Asset_Lists
-│
 ├── 02_Operations
 │   ├── 01_Procedures
 │   │   ├── SOPs
@@ -91,30 +86,25 @@ document.addEventListener('DOMContentLoaded', function() {
 │   │   │   └── Emergency_Response
 │   │   ├── MOPs
 │   │   └── Work_Instructions
-│   │
 │   ├── 02_Sequences_Of_Operation
 │   │   ├── HVAC_Systems
 │   │   ├── Electrical_Systems
 │   │   ├── Control_Systems
 │   │   ├── Fire_Systems
 │   │   └── Water_Systems
-│   │
 │   ├── 03_Training
 │   │   ├── Vendor_Training
 │   │   ├── Equipment_Training
 │   │   ├── Procedures_Training
 │   │   └── Safety_Training
-│   │
 │   ├── 04_Daily_Operations
 │   │   ├── Shift_Handovers
 │   │   ├── Walkrounds
 │   │   ├── Weekly_Calls
 │   │   └── Status_Reports
-│   │
 │   └── 05_MCM
 │       ├── Process_Documentation
 │       └── Requirements
-│
 ├── 03_Maintenance
 │   ├── 01_PPM
 │   │   ├── Electrical
@@ -130,7 +120,6 @@ document.addEventListener('DOMContentLoaded', function() {
 │   │       ├── Lifts
 │   │       ├── Fire_Systems
 │   │       └── Loading_Bay
-│   │
 │   ├── 02_Equipment_Records
 │   │   ├── CRAC_Units
 │   │   ├── Direct_Air_Optimisers
@@ -139,14 +128,11 @@ document.addEventListener('DOMContentLoaded', function() {
 │   │   ├── UPS_Systems
 │   │   ├── Building_Systems
 │   │   └── Variable_Frequency_Drives
-│   │
 │   ├── 03_Vendor_Service_Reports
 │   │   └── [By_Vendor_Name]
-│   │
 │   └── 04_Corrective_Maintenance
 │       ├── Completed_Works
 │       └── Outstanding_Issues
-│
 ├── 04_Compliance
 │   ├── 01_Environmental
 │   │   ├── Generator_Compliance
@@ -159,71 +145,57 @@ document.addEventListener('DOMContentLoaded', function() {
 │   │   │   └── Reports
 │   │   ├── Waste_Management
 │   │   └── COSHH
-│   │
 │   ├── 02_Health_and_Safety
 │   │   ├── Risk_Assessments
 │   │   ├── Fire_Safety
 │   │   ├── LOLER
 │   │   └── Equipment_Testing
-│   │
 │   ├── 03_Electrical_Compliance
 │   │   ├── Inspection_Reports
 │   │   ├── Certifications
 │   │   └── Electrical_Rules
-│   │
 │   ├── 04_Fire_Systems
 │   │   ├── Inspections
 │   │   ├── Testing_Records
 │   │   └── Certifications
-│   │
 │   └── 05_Water_Compliance
 │       ├── Legionella_Management
 │       ├── Water_Sampling
 │       └── Temperature_Checks
-│
 ├── 05_Vendors
 │   ├── 01_Vendor_Information
 │   │   ├── Contact_Lists
 │   │   └── Escalation_Procedures
-│   │
 │   ├── 02_Vendor_Documentation
 │   │   └── [By_Vendor_Name]
 │   │       ├── Competencies
 │   │       ├── RAMS
 │   │       ├── Service_Reports
 │   │       └── Call-out_Records
-│   │
 │   └── 03_Vendor_Management
 │       ├── Onboarding
 │       ├── Contracts
 │       └── Purchase_Orders
-│
 ├── 06_Projects
 │   ├── 01_Active_Projects
 │   │   └── [Project_Name]
-│   │
 │   ├── 02_Commissioning
 │   │   ├── FAT
 │   │   ├── SAT
 │   │   └── Handover
-│   │
 │   └── 03_Construction
 │       ├── Documentation
 │       └── Reports
-│
 └── 07_Administration
     ├── 01_Access_Control
     │   └── Door_Keys_Reference
-    │
     ├── 02_Signage
     │   ├── Layouts
     │   ├── Quotes
     │   └── Templates
-    │
     ├── 03_Site_Management
     │   ├── Site_Launch_Plan
     │   └── Property_Management
-    │
     └── 04_Permits
         ├── E-Permits
         ├── High_Risk_Works
@@ -231,59 +203,79 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add the highlightPath function here
     function highlightPath(folderStructure, selectedPath) {
+    // Split the selected path into segments
+    const pathSegments = selectedPath.split('/').filter(segment => segment.trim() !== '');
+    
+    if (pathSegments.length === 0) {
+        return folderStructure; // No path to highlight
+    }
+    
+    // Process the folder structure line by line
     const lines = folderStructure.split('\n');
-    const pathSegments = selectedPath.split('/').filter(s => s.trim() !== '');
+    const highlightedLines = [];
     
-    // Build a regex pattern for the final subfolder
-    const finalFolder = pathSegments[pathSegments.length - 1];
-    
-    // Keep track of the current path as we traverse
-    let currentPath = [];
-    let currentIndent = -1;
-    
-    const result = [];
+    // Track the current folder path we're in
+    const currentHierarchy = [];
     
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        const indent = line.search(/\S|$/);
         
-        // Calculate the current depth
-        const depth = Math.floor(indent / 3);
-        
-        // Extract folder name
-        const folderName = line.trim().replace(/^[├└]── /, '').replace(/^[│ ]*/, '');
-        
-        // Update the current path based on indent level
-        if (depth === 0) {
-            currentPath = [folderName];
-        } else if (depth === currentIndent + 1) {
-            currentPath.push(folderName);
-        } else if (depth <= currentIndent) {
-            currentPath = currentPath.slice(0, depth);
-            currentPath.push(folderName);
+        // Skip empty lines
+        if (!line.trim()) {
+            highlightedLines.push(line);
+            continue;
         }
         
-        currentIndent = depth;
+        // Calculate indent level - exactly 3 spaces per level
+        const indent = line.search(/\S|$/);
+        const level = Math.floor(indent / 3);
         
-        // Convert current path to string for comparison
-        const currentPathString = currentPath.join('/');
+        // Extract the folder name from the line
+        let folderName = line.trim();
+        if (folderName.startsWith('├──')) {
+            folderName = folderName.substring(4).trim();
+        } else if (folderName.startsWith('└──')) {
+            folderName = folderName.substring(4).trim();
+        }
         
-        // Check if this is part of our target path
-        const targetPathPrefix = pathSegments.slice(0, currentPath.length).join('/');
-        
-        if (currentPathString === selectedPath) {
-            // Exact match for the final folder
-            result.push(`<span class="final-folder">${line}</span>`);
-        } else if (currentPathString === targetPathPrefix && currentPath.length < pathSegments.length) {
-            // Parent folder in the path
-            result.push(`<span class="highlight-path">${line}</span>`);
+        // Update the current path based on indentation level
+        if (level === 0) {
+            currentHierarchy.length = 0;
+            currentHierarchy.push(folderName);
         } else {
-            // Not in our path
-            result.push(line);
+            // Adjust hierarchy
+            currentHierarchy.length = level;
+            currentHierarchy[level - 1] = folderName;
+        }
+        
+        // Build the current path string
+        const currentPath = currentHierarchy.join('/');
+        
+        // Check if the current path matches our selected path
+        let isPartOfSelectedPath = false;
+        let isExactMatch = false;
+        
+        if (selectedPath.startsWith(currentPath)) {
+            isPartOfSelectedPath = true;
+            if (currentPath === selectedPath) {
+                isExactMatch = true;
+            }
+        }
+        
+        // Apply highlighting
+        if (isExactMatch) {
+            // Final folder - apply flashing highlight
+            highlightedLines.push(`<span class="final-folder">${line}</span>`);
+        } else if (isPartOfSelectedPath) {
+            // Parent folder in the path - regular highlight
+            highlightedLines.push(`<span class="highlight-path">${line}</span>`);
+        } else {
+            // Not part of the path
+            highlightedLines.push(line);
         }
     }
     
-    return result.join('\n');
+    return highlightedLines.join('\n');
 }
         
     // Selected files

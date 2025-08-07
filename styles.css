@@ -71,6 +71,6 @@
 
 @keyframes folder-flash {
     0% { background-color: #ffeb3b; } /* Yellow */
-    50% { background-color: #ff9800; } /* Orange - even more pronounced */
+    50% { background-color: #ff9800; } /* Orange - more pronounced */
     100% { background-color: #ffeb3b; } /* Yellow */
 }
