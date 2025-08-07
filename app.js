@@ -203,79 +203,54 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to highlight the path in the folder structure
     function highlightPath(folderStructure, selectedPath) {
-        // Clean and normalize the path
-        selectedPath = selectedPath.trim();
+        if (!selectedPath) return folderStructure;
         
-        // Split the path into segments
-        const pathSegments = selectedPath.split('/').map(s => s.trim());
+        // Split the path into segments and clean them
+        const pathSegments = selectedPath.split('/').filter(s => s.trim() !== '');
+        if (pathSegments.length === 0) return folderStructure;
         
-        // Get the final folder name
-        const finalFolder = pathSegments[pathSegments.length - 1];
-        
-        // Process each line of the folder structure
+        // Process line by line
         const lines = folderStructure.split('\n');
         const result = [];
         
-        // Keep track of matching state
-        let currentIndent = -1;
-        let matchedSegments = 0;
-        let pathContext = [];
-        
-        for (const line of lines) {
-            // Skip empty lines
-            if (!line.trim()) {
-                result.push(line);
-                continue;
-            }
-            
-            // Calculate indent level (3 spaces per level)
+        // Match exact segments to avoid highlighting wrong folders with same name
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            // Calculate indent level
             const indent = line.search(/\S|$/);
-            const indentLevel = Math.round(indent / 3);
             
-            // Extract folder name
-            let folderName = line.trim();
-            if (folderName.startsWith('├──')) {
-                folderName = folderName.substring(4).trim();
-            } else if (folderName.startsWith('└──')) {
-                folderName = folderName.substring(4).trim();
-            } else if (folderName.startsWith('│')) {
-                folderName = folderName.replace(/^[│├└][\s─]+/, '').trim();
+            // Check if this line contains any of our path segments
+            let matchFound = false;
+            let isFinalSegment = false;
+            
+            // Extract the folder name from the line
+            const folderNameMatch = line.trim().match(/^[├└]── (.+)$/) || line.trim().match(/^(.+)$/);
+            const folderName = folderNameMatch ? folderNameMatch[1].trim() : '';
+            
+            // Check if this folder matches any segment in our path
+            for (let j = 0; j < pathSegments.length; j++) {
+                if (folderName === pathSegments[j]) {
+                    // Check if this is the correct level for this segment
+                    const expectedIndent = j * 4; // 4 spaces per level
+                    
+                    if (Math.abs(indent - expectedIndent) <= 4) { // Allow some flexibility
+                        matchFound = true;
+                        isFinalSegment = (j === pathSegments.length - 1);
+                        break;
+                    }
+                }
             }
             
-            // Update path context
-            if (indentLevel === 0) {
-                // Root level
-                pathContext = [folderName];
-            } else if (indentLevel > currentIndent) {
-                // Going deeper
-                pathContext.push(folderName);
-            } else if (indentLevel === currentIndent) {
-                // Same level, replace last component
-                pathContext[pathContext.length - 1] = folderName;
+            if (matchFound) {
+                if (isFinalSegment) {
+                    // This is the final folder - add flashing highlight
+                    result.push(`<span class="final-folder-highlight">${line}</span>`);
+                } else {
+                    // This is a parent folder in the path - add regular highlight
+                    result.push(`<span class="folder-path-highlight">${line}</span>`);
+                }
             } else {
-                // Going back up
-                pathContext = pathContext.slice(0, indentLevel);
-                pathContext.push(folderName);
-            }
-            
-            currentIndent = indentLevel;
-            
-            // Check if this matches our path
-            const isPathMatch = pathContext.length <= pathSegments.length && 
-                               pathContext.every((folder, idx) => folder === pathSegments[idx]);
-            
-            // Check if this is the final folder
-            const isFinalFolder = isPathMatch && folderName === finalFolder && 
-                                 pathContext.length === pathSegments.length;
-            
-            if (isFinalFolder) {
-                // Highlight the final folder with flashing animation
-                result.push(`<span class="final-folder-highlight">${line}</span>`);
-            } else if (isPathMatch) {
-                // Highlight parent folders in the path
-                result.push(`<span class="folder-path-highlight">${line}</span>`);
-            } else {
-                // Regular line
+                // Not part of our path
                 result.push(line);
             }
         }
