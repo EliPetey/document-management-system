@@ -38,3 +38,91 @@
     width: 100%;
     line-height: 1.4;
 }
+
+#rename-container {
+  margin-top: 8px;
+  margin-bottom: 12px;
+  padding: 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+}
+
+/* Button styling for rename buttons */
+.rename-btn {
+  margin-left: 4px;
+}
+
+.apply-rename-btn, .cancel-rename-btn, .generate-name-btn {
+  margin: 0 2px;
+}
+
+.generate-name-btn {
+  background-color: #ffc107;
+  border-color: #ffc107;
+  color: #212529;
+}
+
+.generate-name-btn:hover {
+  background-color: #e0a800;
+  border-color: #d39e00;
+  color: #212529;
+}
+
+/* Styling for the input field */
+.rename-input {
+  font-family: monospace;
+}
+
+/* Animation for loading state */
+@keyframes spinner {
+  to {transform: rotate(360deg);}
+}
+
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spinner 0.6s linear infinite;
+  margin-right: 4px;
+  vertical-align: text-bottom;
+}
+
+/* File info display */
+.file-info {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+/* Tooltip styling for filename help */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+
+.tooltip .tooltip-text {
+  visibility: hidden;
+  width: 250px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -125px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}

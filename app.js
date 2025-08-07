@@ -419,6 +419,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="input-group-append">
                             <button class="btn btn-success confirm-btn" data-index="${i}" data-key="${classifyResult.key}">Accept</button>
                             <button class="btn btn-secondary edit-btn" data-index="${i}">Edit</button>
+                            <button class="btn btn-info rename-btn" data-index="${i}" data-key="${classifyResult.key}">Rename</button>
+                        </div>
+                    </div>
+                    <div id="rename-container-${i}" class="d-none mb-2">
+                        <div class="input-group">
+                            <input type="text" class="form-control" value="${file.name}" id="rename-${i}">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary apply-rename-btn" data-index="${i}">Apply</button>
+                                <button class="btn btn-secondary cancel-rename-btn" data-index="${i}">Cancel</button>
+                                <button class="btn btn-warning generate-name-btn" data-index="${i}" data-key="${classifyResult.key}">Generate Name</button>
+                            </div>
                         </div>
                     </div>
                     <div class="small mb-2">
@@ -452,27 +463,31 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle confirmation buttons
     document.addEventListener('click', async function(e) {
         if (e.target.classList.contains('confirm-btn')) {
-            const index = e.target.dataset.index;
-            const key = e.target.dataset.key;
-            const finalPath = document.getElementById(`path-${index}`).value;
-            const statusElement = document.getElementById(`status-${index}`);
-            
-            try {
-                statusElement.textContent = 'Moving file...';
-                
-                // Call API to move file to final location
-                const moveResponse = await fetch(moveFileEndpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        key: key,
-                        targetPath: finalPath,
-                        filename: selectedFiles[index].name
-                    })
-                });
+    const index = e.target.dataset.index;
+    const key = e.target.dataset.key;
+    const finalPath = document.getElementById(`path-${index}`).value;
+    const statusElement = document.getElementById(`status-${index}`);
+    
+    // Use the new name if available, otherwise use original filename
+    const finalFilename = selectedFiles[index].newName || selectedFiles[index].name;
+    
+    try {
+        statusElement.textContent = 'Moving file...';
+        
+        // Call API to move file to final location with new name if provided
+        const moveResponse = await fetch(moveFileEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                key: key,
+                targetPath: finalPath,
+                filename: selectedFiles[index].name,
+                newFilename: finalFilename // Add the new filename
+            })
+        });
                 
                 if (!moveResponse.ok) {
                     throw new Error(`Failed to move file: ${moveResponse.status}`);
@@ -510,5 +525,71 @@ document.addEventListener('DOMContentLoaded', function() {
             pathInput.focus();
             pathInput.select();
         }
+
+        if (e.target.classList.contains('rename-btn')) {
+    const index = e.target.dataset.index;
+    document.getElementById(`rename-container-${index}`).classList.remove('d-none');
+}
+
+if (e.target.classList.contains('cancel-rename-btn')) {
+    const index = e.target.dataset.index;
+    document.getElementById(`rename-container-${index}`).classList.add('d-none');
+}
+
+if (e.target.classList.contains('apply-rename-btn')) {
+    const index = e.target.dataset.index;
+    const newName = document.getElementById(`rename-${index}`).value;
+    // Store the new name to be used when accepting the file
+    selectedFiles[index].newName = newName;
+    document.getElementById(`rename-container-${index}`).classList.add('d-none');
+    // Update the file display name
+    const fileNameEl = document.querySelector(`#resultsList li:nth-child(${parseInt(index)+1}) strong`);
+    if (fileNameEl) {
+        fileNameEl.textContent = newName;
+    }
+}
+
+if (e.target.classList.contains('generate-name-btn')) {
+    const index = e.target.dataset.index;
+    const key = e.target.dataset.key;
+    const generateBtn = e.target;
+    
+    // Disable button and show loading state
+    generateBtn.disabled = true;
+    generateBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
+    
+    try {
+        // Call API to generate a descriptive name
+        const response = await fetch('https://ya6wa8l0mh.execute-api.us-east-1.amazonaws.com/prod/generate-filename', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                key: key,
+                filename: selectedFiles[index].name,
+                path: document.getElementById(`path-${index}`).value
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Failed to generate filename: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        
+        // Update the rename input with the generated name
+        document.getElementById(`rename-${index}`).value = result.suggestedName;
+        
+    } catch (error) {
+        console.error('Error generating filename:', error);
+        alert('Failed to generate filename: ' + error.message);
+    } finally {
+        // Re-enable button
+        generateBtn.disabled = false;
+        generateBtn.textContent = 'Generate Name';
+    }
+}
     });
 });
