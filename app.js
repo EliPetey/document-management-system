@@ -202,80 +202,93 @@ document.addEventListener('DOMContentLoaded', function() {
         └── Templates`;
 
     // Add the highlightPath function here
-    function highlightPath(folderStructure, selectedPath) {
-    // Split the selected path into segments
-    const pathSegments = selectedPath.split('/').filter(segment => segment.trim() !== '');
+function highlightPath(folderStructure, selectedPath) {
+    // Normalize the path format
+    selectedPath = selectedPath.trim();
     
-    if (pathSegments.length === 0) {
-        return folderStructure; // No path to highlight
+    // If there's no path to highlight, return the original structure
+    if (!selectedPath) {
+        return folderStructure;
     }
+    
+    // Split the path into segments
+    const pathSegments = selectedPath.split('/').filter(s => s.trim() !== '');
+    if (pathSegments.length === 0) {
+        return folderStructure;
+    }
+    
+    // Get the final folder name that we want to highlight
+    const finalFolder = pathSegments[pathSegments.length - 1];
     
     // Process the folder structure line by line
     const lines = folderStructure.split('\n');
-    const highlightedLines = [];
+    const result = [];
     
-    // Track the current folder path we're in
-    const currentHierarchy = [];
+    // Keep track of the current path
+    const currentPath = [];
+    let lastIndentLevel = -1;
     
+    // Process each line
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         
         // Skip empty lines
         if (!line.trim()) {
-            highlightedLines.push(line);
+            result.push(line);
             continue;
         }
         
-        // Calculate indent level - exactly 3 spaces per level
-        const indent = line.search(/\S|$/);
-        const level = Math.floor(indent / 3);
+        // Calculate indent level (3 spaces per level)
+        const indentMatch = line.match(/^(\s*)/);
+        const indent = indentMatch ? indentMatch[1].length : 0;
+        const indentLevel = Math.round(indent / 3);
         
-        // Extract the folder name from the line
-        let folderName = line.trim();
-        if (folderName.startsWith('├──')) {
-            folderName = folderName.substring(4).trim();
-        } else if (folderName.startsWith('└──')) {
-            folderName = folderName.substring(4).trim();
+        // Extract folder name
+        const folderMatch = line.match(/[├└]── ([^/]+)$/) || line.match(/^([^/]+)$/);
+        const folderName = folderMatch ? folderMatch[1].trim() : "";
+        
+        // Adjust current path based on indent level
+        if (indentLevel <= lastIndentLevel) {
+            // Going back up or staying at the same level
+            currentPath.splice(indentLevel);
         }
         
-        // Update the current path based on indentation level
-        if (level === 0) {
-            currentHierarchy.length = 0;
-            currentHierarchy.push(folderName);
-        } else {
-            // Adjust hierarchy
-            currentHierarchy.length = level;
-            currentHierarchy[level - 1] = folderName;
+        if (folderName) {
+            currentPath[indentLevel] = folderName;
         }
         
-        // Build the current path string
-        const currentPath = currentHierarchy.join('/');
+        lastIndentLevel = indentLevel;
         
-        // Check if the current path matches our selected path
-        let isPartOfSelectedPath = false;
-        let isExactMatch = false;
+        // Check if this line is the final folder we're looking for
+        const isTargetFolder = folderName === finalFolder;
         
-        if (selectedPath.startsWith(currentPath)) {
-            isPartOfSelectedPath = true;
-            if (currentPath === selectedPath) {
-                isExactMatch = true;
+        // Check if this is part of our path
+        let isInPath = false;
+        if (pathSegments.length > 1) {
+            // For multi-segment paths, check the path segments
+            isInPath = true;
+            for (let j = 0; j < Math.min(indentLevel, pathSegments.length); j++) {
+                if (currentPath[j] !== pathSegments[j]) {
+                    isInPath = false;
+                    break;
+                }
             }
         }
         
         // Apply highlighting
-        if (isExactMatch) {
-            // Final folder - apply flashing highlight
-            highlightedLines.push(`<span class="final-folder">${line}</span>`);
-        } else if (isPartOfSelectedPath) {
-            // Parent folder in the path - regular highlight
-            highlightedLines.push(`<span class="highlight-path">${line}</span>`);
+        if (isTargetFolder && isInPath) {
+            // This is our target folder - add flashing highlight
+            result.push(`<span class="final-folder">${line}</span>`);
+        } else if (isInPath) {
+            // This is a parent folder in the path
+            result.push(`<span class="highlight-path">${line}</span>`);
         } else {
-            // Not part of the path
-            highlightedLines.push(line);
+            // Not in our path
+            result.push(line);
         }
     }
     
-    return highlightedLines.join('\n');
+    return result.join('\n');
 }
         
     // Selected files
@@ -436,13 +449,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Extract just the path without any explanation text
         let suggestedPath = classifyResult.suggestedPath;
+        console.log("Original path:", suggestedPath); // Add this for debugging
+
         // If the result contains extra text, try to extract just the path
-        if (suggestedPath.includes('/')) {
+        if (suggestedPath && suggestedPath.includes('/')) {
             // Find the first occurrence of something that looks like a path
-            const pathMatch = suggestedPath.match(/[A-Za-z0-9_]+\/[A-Za-z0-9_\/]+/);
+            const pathMatch = suggestedPath.match(/Site.*?\/.+?\/[^\/]+/g);
             if (pathMatch) {
                 suggestedPath = pathMatch[0];
+                console.log("Extracted path:", suggestedPath); // Add this for debugging
             }
+        } else {
+            console.log("Path doesn't contain expected format"); // Add this for debugging
         }
         
         confirmationDiv.innerHTML = `
