@@ -203,92 +203,61 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add the highlightPath function here
 function highlightPath(folderStructure, selectedPath) {
-    // Normalize the path format
-    selectedPath = selectedPath.trim();
+    // Split the selected path into segments
+    const pathSegments = selectedPath.split('/').filter(segment => segment.trim() !== '');
     
-    // If there's no path to highlight, return the original structure
-    if (!selectedPath) {
-        return folderStructure;
-    }
-    
-    // Split the path into segments
-    const pathSegments = selectedPath.split('/').filter(s => s.trim() !== '');
     if (pathSegments.length === 0) {
-        return folderStructure;
+        return folderStructure; // No path to highlight
     }
-    
-    // Get the final folder name that we want to highlight
-    const finalFolder = pathSegments[pathSegments.length - 1];
     
     // Process the folder structure line by line
     const lines = folderStructure.split('\n');
-    const result = [];
+    const highlightedLines = [];
     
-    // Keep track of the current path
-    const currentPath = [];
-    let lastIndentLevel = -1;
+    // Keep track of context to determine which folder to highlight
+    let currentDepth = 0;
+    let matchingPath = false;
+    let pathDepth = 0;
     
-    // Process each line
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         
-        // Skip empty lines
-        if (!line.trim()) {
-            result.push(line);
-            continue;
+        // Determine the indentation level (depth) of this line
+        const indent = line.search(/\S|$/);
+        const currentLineDepth = Math.floor(indent / 4); // Assuming 4 spaces per level
+        
+        // Reset tracking when we go back up the tree
+        if (currentLineDepth < currentDepth) {
+            matchingPath = false;
         }
         
-        // Calculate indent level (3 spaces per level)
-        const indentMatch = line.match(/^(\s*)/);
-        const indent = indentMatch ? indentMatch[1].length : 0;
-        const indentLevel = Math.round(indent / 3);
+        currentDepth = currentLineDepth;
         
-        // Extract folder name
-        const folderMatch = line.match(/[├└]── ([^/]+)$/) || line.match(/^([^/]+)$/);
-        const folderName = folderMatch ? folderMatch[1].trim() : "";
+        // Check if this line contains the current segment we're looking for
+        const segmentIndex = pathDepth < pathSegments.length ? pathSegments[pathDepth] : null;
         
-        // Adjust current path based on indent level
-        if (indentLevel <= lastIndentLevel) {
-            // Going back up or staying at the same level
-            currentPath.splice(indentLevel);
-        }
-        
-        if (folderName) {
-            currentPath[indentLevel] = folderName;
-        }
-        
-        lastIndentLevel = indentLevel;
-        
-        // Check if this line is the final folder we're looking for
-        const isTargetFolder = folderName === finalFolder;
-        
-        // Check if this is part of our path
-        let isInPath = false;
-        if (pathSegments.length > 1) {
-            // For multi-segment paths, check the path segments
-            isInPath = true;
-            for (let j = 0; j < Math.min(indentLevel, pathSegments.length); j++) {
-                if (currentPath[j] !== pathSegments[j]) {
-                    isInPath = false;
-                    break;
-                }
+        if (segmentIndex && line.includes(segmentIndex)) {
+            // Found a potential match for the current segment
+            
+            // Check if this is a full match (not a substring of another word)
+            const lineContent = line.trim().replace(/├──|│|└──/g, '').trim();
+            
+            if (lineContent === segmentIndex || lineContent.startsWith(segmentIndex + ' ')) {
+                // This is the segment we're looking for
+                matchingPath = true;
+                pathDepth++;
+                
+                // Highlight this line
+                highlightedLines.push(`<span class="highlight-path">${line}</span>`);
+                continue;
             }
         }
         
-        // Apply highlighting
-        if (isTargetFolder && isInPath) {
-            // This is our target folder - add flashing highlight
-            result.push(`<span class="final-folder">${line}</span>`);
-        } else if (isInPath) {
-            // This is a parent folder in the path
-            result.push(`<span class="highlight-path">${line}</span>`);
-        } else {
-            // Not in our path
-            result.push(line);
-        }
+        // Add line without highlighting
+        highlightedLines.push(line);
     }
     
-    return result.join('\n');
+    return highlightedLines.join('\n');
 }
         
     // Selected files

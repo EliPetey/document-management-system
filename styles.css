@@ -34,7 +34,7 @@
 
 /* Add to your stylesheet */
 .folder-structure-container {
-    max-height: 400px;
+    max-height: 400px; /* Increased from 200px for more visibility */
     overflow-y: auto;
     border: 1px solid #e0e0e0;
     border-radius: 4px;
@@ -46,31 +46,21 @@
 
 .folder-structure {
     font-family: monospace;
-    font-size: 14px;
+    font-size: 14px; /* Increased font size for better readability */
     white-space: pre;
     margin: 0;
     width: 100%;
     line-height: 1.4;
 }
 
+/* Updated highlight class */
 .highlight-path {
-    background-color: #fff9c4; /* Light yellow for parent folders */
-    display: inline-block;
-    width: 100%;
-    font-weight: bold;
-}
-
-/* More pronounced flashing animation for the final folder */
-.final-folder {
+    background-color: #ffeb3b; /* Bright yellow */
     display: inline-block;
     width: 100%;
     font-weight: bold;
     color: #000;
-    animation: folder-flash 1.5s infinite;
-}
-
-@keyframes folder-flash {
-    0% { background-color: #ffeb3b; } /* Yellow */
-    50% { background-color: #ff9800; } /* Orange - more pronounced */
-    100% { background-color: #ffeb3b; } /* Yellow */
+    padding: 2px 4px;
+    margin: 2px 0;
+    border-radius: 3px;
 }
