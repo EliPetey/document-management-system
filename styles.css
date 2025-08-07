@@ -126,3 +126,20 @@
   visibility: visible;
   opacity: 1;
 }
+
+.site-selector {
+  padding: 10px 15px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  margin-bottom: 1.5rem;
+}
+
+.site-btn {
+  min-width: 100px;
+}
+
+.site-btn.active {
+  background-color: #007bff;
+  color: white;
+}
