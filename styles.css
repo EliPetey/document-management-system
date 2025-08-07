@@ -1,33 +1,41 @@
-.drop-area {
-    border: 2px dashed #ccc;
-    border-radius: 8px;
-    padding: 40px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.drop-area.highlight {
-    border-color: #007bff;
-    background-color: rgba(0, 123, 255, 0.1);
-}
-
-.file-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 16px;
-}
-
-.file-status {
-    font-size: 0.85rem;
-}
-
-.chat-container {
-    height: 400px;
+.folder-structure-container {
+    max-height: 400px;
     overflow-y: auto;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-bottom: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 8px;
+    background-color: #f8f9fa;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-family: monospace;
+}
+
+.folder-structure {
+    font-size: 14px;
+    white-space: pre;
+    margin: 0;
+    width: 100%;
+    line-height: 1.4;
+}
+
+.folder-path-highlight {
+    background-color: #fff9c4; /* Light yellow for parent folders */
+    display: inline-block;
+    width: 100%;
+    font-weight: bold;
+}
+
+/* Flashing yellow highlight for the final folder */
+.final-folder-highlight {
+    display: inline-block;
+    width: 100%;
+    font-weight: bold;
+    color: #000;
+    animation: folder-flash 1.2s infinite;
+}
+
+@keyframes folder-flash {
+    0% { background-color: #ffeb3b; }   /* Yellow */
+    50% { background-color: #ffa000; }  /* Orange-yellow - more noticeable */
+    100% { background-color: #ffeb3b; } /* Yellow */
 }
