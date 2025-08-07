@@ -231,89 +231,59 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add the highlightPath function here
     function highlightPath(folderStructure, selectedPath) {
-    // Split the selected path into segments
-    const pathSegments = selectedPath.split('/').filter(segment => segment.trim() !== '');
-    
-    if (pathSegments.length === 0) {
-        return folderStructure; // No path to highlight
-    }
-    
-    // Process the folder structure line by line
     const lines = folderStructure.split('\n');
-    const highlightedLines = [];
+    const pathSegments = selectedPath.split('/').filter(s => s.trim() !== '');
     
-    // Keep track of the current path
+    // Build a regex pattern for the final subfolder
+    const finalFolder = pathSegments[pathSegments.length - 1];
+    
+    // Keep track of the current path as we traverse
     let currentPath = [];
+    let currentIndent = -1;
     
-    // Process each line
+    const result = [];
+    
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        
-        // Skip empty lines
-        if (line.trim() === '') {
-            highlightedLines.push(line);
-            continue;
-        }
-        
-        // Calculate the depth based on the position of the first non-whitespace character
         const indent = line.search(/\S|$/);
-        const depth = Math.floor(indent / 3); // Each level is 3 spaces
         
-        // Extract the folder name (remove the tree characters)
-        const folderNameMatch = line.trim().match(/^[├└]── (.+)$/) || line.trim().match(/^(.+)$/);
-        const folderName = folderNameMatch ? folderNameMatch[1] : line.trim();
+        // Calculate the current depth
+        const depth = Math.floor(indent / 3);
         
-        // Adjust the current path based on the depth
-        if (depth < currentPath.length) {
-            // We've moved up the tree, truncate the path
-            currentPath = currentPath.slice(0, depth);
-        }
+        // Extract folder name
+        const folderName = line.trim().replace(/^[├└]── /, '').replace(/^[│ ]*/, '');
         
-        // Add or replace at the current depth
-        if (depth === currentPath.length) {
+        // Update the current path based on indent level
+        if (depth === 0) {
+            currentPath = [folderName];
+        } else if (depth === currentIndent + 1) {
             currentPath.push(folderName);
-        } else if (depth < currentPath.length) {
-            currentPath[depth] = folderName;
+        } else if (depth <= currentIndent) {
+            currentPath = currentPath.slice(0, depth);
+            currentPath.push(folderName);
         }
         
-        // Check if this line is part of our target path
-        let isPartOfPath = false;
-        let isExactMatch = false;
+        currentIndent = depth;
         
-        if (currentPath.length <= pathSegments.length) {
-            isPartOfPath = true;
-            
-            // Check each segment of the path
-            for (let j = 0; j < currentPath.length; j++) {
-                if (currentPath[j] !== pathSegments[j]) {
-                    isPartOfPath = false;
-                    break;
-                }
-            }
-            
-            // If we've matched all segments and this is the final depth, it's an exact match
-            if (isPartOfPath && currentPath.length === pathSegments.length) {
-                isExactMatch = true;
-            }
-        }
+        // Convert current path to string for comparison
+        const currentPathString = currentPath.join('/');
         
-        // For debugging
-        console.log(`Line: "${line}", Depth: ${depth}, Path: ${currentPath.join('/')}, Match: ${isPartOfPath}, Exact: ${isExactMatch}`);
+        // Check if this is part of our target path
+        const targetPathPrefix = pathSegments.slice(0, currentPath.length).join('/');
         
-        // Apply highlighting based on the match
-        if (isExactMatch) {
-            // This is the exact final folder - add flashing highlight
-            highlightedLines.push(`<span class="final-folder">${line}</span>`);
-        } else if (isPartOfPath) {
-            // This is a parent folder in the path - add regular highlight
-            highlightedLines.push(`<span class="highlight-path">${line}</span>`);
+        if (currentPathString === selectedPath) {
+            // Exact match for the final folder
+            result.push(`<span class="final-folder">${line}</span>`);
+        } else if (currentPathString === targetPathPrefix && currentPath.length < pathSegments.length) {
+            // Parent folder in the path
+            result.push(`<span class="highlight-path">${line}</span>`);
         } else {
-            // Not part of our path
-            highlightedLines.push(line);
+            // Not in our path
+            result.push(line);
         }
     }
     
-    return highlightedLines.join('\n');
+    return result.join('\n');
 }
         
     // Selected files
