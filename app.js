@@ -411,187 +411,81 @@ Site (LHR186)
         ├── High_Risk_Works
         └── Templates`;
 
-        function highlightPath(folderStructure, selectedPath) {
-
+    function highlightPath(folderStructure, selectedPath) {
     // If there's no path, just return the original structure
-
     if (!selectedPath) {
-
         return folderStructure;
-
     }
-
-   
-
+    
+    // Normalize path - replace backslashes with forward slashes
+    const normalizedPath = selectedPath.replace(/\\/g, '/').replace(/\/$/, '');
+    
     // Split the path into segments
-
-    const pathSegments = selectedPath.split('/');
-
-   
-
+    const pathSegments = normalizedPath.split('/');
+    
+    // Extract the site from the path
+    const siteMatch = selectedPath.match(/Site\s*\(\s*(LHR\d+)\s*\)/);
+    const selectedSite = siteMatch ? siteMatch[1] : null;
+    
     // Process the folder structure line by line
-
     const lines = folderStructure.split('\n');
-
     const result = [];
-
-   
-
+    
+    // Track which site we're currently in
+    let currentSite = null;
+    
     // Process each line
-
     for (let i = 0; i < lines.length; i++) {
-
         const line = lines[i];
-
         const trimmedLine = line.trim();
-
-       
-
-        // Check if this line is part of our path
-
-        let isPartOfPath = false;
-
-        let isFinalFolder = false;
-
-       
-
-        // Check each segment of the path
-
-        for (let j = 0; j < pathSegments.length; j++) {
-
-            const segment = pathSegments[j];
-
-           
-
-            // If this line contains the segment name (with proper tree characters removed)
-
-            if (trimmedLine.endsWith(segment) || trimmedLine === segment) {
-
-                isPartOfPath = true;
-
-               
-
-                // If this is the final segment, mark it for flashing
-
-                if (j === pathSegments.length - 1) {
-
-                    isFinalFolder = true;
-
-                }
-
-                break;
-
-            }
-
+        
+        // Check if this line defines a site
+        const siteLineMatch = trimmedLine.match(/^Site\s*\(\s*(LHR\d+)\s*\)$/);
+        if (siteLineMatch) {
+            currentSite = siteLineMatch[1];
         }
-
-       
-
-        // Apply highlighting based on matching
-
-        if (isFinalFolder) {
-
-            // Final folder - add flashing highlight
-
-            result.push(`<span class="final-folder-highlight">${line}</span>`);
-
-        } else if (isPartOfPath) {
-
-            // Parent folder - add regular highlight
-
-            result.push(`<span class="folder-path-highlight">${line}</span>`);
-
-        } else {
-
-            // Regular line - no highlight
-
+        
+        // Skip highlighting if we're in a different site than the selected path
+        if (selectedSite && currentSite && currentSite !== selectedSite) {
             result.push(line);
-
+            continue;
         }
-
-    }
-
-   
-
-    return result.join('\n');
-
-}
-
-//     function highlightPath(folderStructure, selectedPath) {
-//     // If there's no path, just return the original structure
-//     if (!selectedPath) {
-//         return folderStructure;
-//     }
-    
-//     // Normalize path - replace backslashes with forward slashes
-//     const normalizedPath = selectedPath.replace(/\\/g, '/').replace(/\/$/, '');
-    
-//     // Split the path into segments
-//     const pathSegments = normalizedPath.split('/');
-    
-//     // Extract the site from the path
-//     const siteMatch = selectedPath.match(/Site\s*\(\s*(LHR\d+)\s*\)/);
-//     const selectedSite = siteMatch ? siteMatch[1] : null;
-    
-//     // Process the folder structure line by line
-//     const lines = folderStructure.split('\n');
-//     const result = [];
-    
-//     // Track which site we're currently in
-//     let currentSite = null;
-    
-//     // Process each line
-//     for (let i = 0; i < lines.length; i++) {
-//         const line = lines[i];
-//         const trimmedLine = line.trim();
         
-//         // Check if this line defines a site
-//         const siteLineMatch = trimmedLine.match(/^Site\s*\(\s*(LHR\d+)\s*\)$/);
-//         if (siteLineMatch) {
-//             currentSite = siteLineMatch[1];
-//         }
+        // Check if this line is part of our path
+        let isPartOfPath = false;
+        let isFinalFolder = false;
         
-//         // Skip highlighting if we're in a different site than the selected path
-//         if (selectedSite && currentSite && currentSite !== selectedSite) {
-//             result.push(line);
-//             continue;
-//         }
-        
-//         // Check if this line is part of our path
-//         let isPartOfPath = false;
-//         let isFinalFolder = false;
-        
-//         // Check each segment of the path
-//         for (let j = 0; j < pathSegments.length; j++) {
-//             const segment = pathSegments[j];
+        // Check each segment of the path
+        for (let j = 0; j < pathSegments.length; j++) {
+            const segment = pathSegments[j];
             
-//             // If this line contains the segment name (with proper tree characters removed)
-//             if (trimmedLine.endsWith(segment) || trimmedLine === segment) {
-//                 isPartOfPath = true;
+            // If this line contains the segment name (with proper tree characters removed)
+            if (trimmedLine.endsWith(segment) || trimmedLine === segment) {
+                isPartOfPath = true;
                 
-//                 // If this is the final segment, mark it for flashing
-//                 if (j === pathSegments.length - 1) {
-//                     isFinalFolder = true;
-//                 }
-//                 break;
-//             }
-//         }
+                // If this is the final segment, mark it for flashing
+                if (j === pathSegments.length - 1) {
+                    isFinalFolder = true;
+                }
+                break;
+            }
+        }
         
-//         // Apply highlighting based on matching
-//         if (isFinalFolder) {
-//             // Final folder - add flashing highlight
-//             result.push(`<span class="final-folder-highlight">${line}</span>`);
-//         } else if (isPartOfPath) {
-//             // Parent folder - add regular highlight
-//             result.push(`<span class="folder-path-highlight">${line}</span>`);
-//         } else {
-//             // Regular line - no highlight
-//             result.push(line);
-//         }
-//     }
+        // Apply highlighting based on matching
+        if (isFinalFolder) {
+            // Final folder - add flashing highlight
+            result.push(`<span class="final-folder-highlight">${line}</span>`);
+        } else if (isPartOfPath) {
+            // Parent folder - add regular highlight
+            result.push(`<span class="folder-path-highlight">${line}</span>`);
+        } else {
+            // Regular line - no highlight
+            result.push(line);
+        }
+    }
     
-//     return result.join('\n');
-// }
+    return result.join('\n');
+}
     
     // Event listeners for drag and drop
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
