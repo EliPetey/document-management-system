@@ -42,12 +42,32 @@ document.addEventListener('DOMContentLoaded', function() {
 ├── 01_Technical_Documentation
 │   ├── 01_Drawings
 │   │   ├── Electrical
-│   │   │   ├── SLDs
 │   │   │   ├── MV_System
-│   │   │   ├── LV_System
-│   │   │   ├── Circuit_Schedules
-│   │   │   ├── Discrimination_Studies
-│   │   │   └── Earthing
+│   │   │   │   ├── SLDs
+│   │   │   │   │   ├── UP1
+│   │   │   │   │   └── EC1
+│   │   │   │   ├── SOOs
+│   │   │   │   │   ├── UP1
+│   │   │   │   │   └── EC1
+│   │   │   │   ├── SOPs
+│   │   │   │   │   ├── UP1
+│   │   │   │   │   └── EC1
+│   │   │   │   └── MOPs
+│   │   │   │       ├── UP1
+│   │   │   │       └── EC1
+│   │   │   └── LV_System
+│   │   │       ├── SLDs
+│   │   │       │   ├── UP1
+│   │   │       │   └── EC1
+│   │   │       ├── SOOs
+│   │   │       │   ├── UP1
+│   │   │       │   └── EC1
+│   │   │       ├── SOPs
+│   │   │       │   ├── UP1
+│   │   │       │   └── EC1
+│   │   │       └── MOPs
+│   │   │           ├── UP1
+│   │   │           └── EC1
 │   │   ├── Mechanical
 │   │   │   ├── HVAC
 │   │   │   ├── Cooling_Systems
@@ -228,12 +248,32 @@ Site (LHR186)
 ├── 01_Technical_Documentation
 │   ├── 01_Drawings
 │   │   ├── Electrical
-│   │   │   ├── SLDs
 │   │   │   ├── MV_System
-│   │   │   ├── LV_System
-│   │   │   ├── Circuit_Schedules
-│   │   │   ├── Discrimination_Studies
-│   │   │   └── Earthing
+│   │   │   │   ├── SLDs
+│   │   │   │   │   ├── UP1
+│   │   │   │   │   └── EC1
+│   │   │   │   ├── SOOs
+│   │   │   │   │   ├── UP1
+│   │   │   │   │   └── EC1
+│   │   │   │   ├── SOPs
+│   │   │   │   │   ├── UP1
+│   │   │   │   │   └── EC1
+│   │   │   │   └── MOPs
+│   │   │   │       ├── UP1
+│   │   │   │       └── EC1
+│   │   │   └── LV_System
+│   │   │       ├── SLDs
+│   │   │       │   ├── UP1
+│   │   │       │   └── EC1
+│   │   │       ├── SOOs
+│   │   │       │   ├── UP1
+│   │   │       │   └── EC1
+│   │   │       ├── SOPs
+│   │   │       │   ├── UP1
+│   │   │       │   └── EC1
+│   │   │       └── MOPs
+│   │   │           ├── UP1
+│   │   │           └── EC1
 │   │   ├── Mechanical
 │   │   │   ├── HVAC
 │   │   │   ├── Cooling_Systems
