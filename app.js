@@ -303,32 +303,113 @@ Site (LHR186)
 │   │   ├── Fire_Systems
 │   │   └── Water_Systems
 │   ├── 03_Training
+│   │   ├── Vendor_Training
+│   │   ├── Equipment_Training
+│   │   ├── Procedures_Training
+│   │   └── Safety_Training
 │   ├── 04_Daily_Operations
+│   │   ├── Shift_Handovers
+│   │   ├── Walkrounds
+│   │   ├── Weekly_Calls
+│   │   └── Status_Reports
 │   └── 05_MCM
+│       ├── Process_Documentation
+│       └── Requirements
 ├── 03_Maintenance
 │   ├── 01_PPM
+│   │   ├── Electrical
+│   │   │   ├── MV_Equipment
+│   │   │   ├── LV_Equipment
+│   │   │   └── UPS_Systems
+│   │   ├── Mechanical
+│   │   │   ├── HVAC_Systems
+│   │   │   ├── CRAC_Units
+│   │   │   └── Direct_Air_Optimisers
+│   │   ├── Generators
+│   │   └── Building_Systems
+│   │       ├── Lifts
+│   │       ├── Fire_Systems
+│   │       └── Loading_Bay
 │   ├── 02_Equipment_Records
+│   │   ├── CRAC_Units
+│   │   ├── Direct_Air_Optimisers
+│   │   ├── Fan_Coil_Units
+│   │   ├── Generators
+│   │   ├── UPS_Systems
+│   │   ├── Building_Systems
+│   │   └── Variable_Frequency_Drives
 │   ├── 03_Vendor_Service_Reports
+│   │   └── [By_Vendor_Name]
 │   └── 04_Corrective_Maintenance
+│       ├── Completed_Works
+│       └── Outstanding_Issues
 ├── 04_Compliance
 │   ├── 01_Environmental
+│   │   ├── Generator_Compliance
+│   │   │   ├── Run_Logs
+│   │   │   ├── Fuel_Records
+│   │   │   └── SCR_Data
+│   │   ├── F-Gas_Management
+│   │   │   ├── Registers
+│   │   │   ├── Certificates
+│   │   │   └── Reports
+│   │   ├── Waste_Management
+│   │   └── COSHH
 │   ├── 02_Health_and_Safety
+│   │   ├── Risk_Assessments
+│   │   ├── Fire_Safety
+│   │   ├── LOLER
+│   │   └── Equipment_Testing
 │   ├── 03_Electrical_Compliance
+│   │   ├── Inspection_Reports
+│   │   ├── Certifications
+│   │   └── Electrical_Rules
 │   ├── 04_Fire_Systems
+│   │   ├── Inspections
+│   │   ├── Testing_Records
+│   │   └── Certifications
 │   └── 05_Water_Compliance
+│       ├── Legionella_Management
+│       ├── Water_Sampling
+│       └── Temperature_Checks
 ├── 05_Vendors
 │   ├── 01_Vendor_Information
+│   │   ├── Contact_Lists
+│   │   └── Escalation_Procedures
 │   ├── 02_Vendor_Documentation
+│   │   └── [By_Vendor_Name]
+│   │       ├── Competencies
+│   │       ├── RAMS
+│   │       ├── Service_Reports
+│   │       └── Call-out_Records
 │   └── 03_Vendor_Management
+│       ├── Onboarding
+│       ├── Contracts
+│       └── Purchase_Orders
 ├── 06_Projects
 │   ├── 01_Active_Projects
+│   │   └── [Project_Name]
 │   ├── 02_Commissioning
+│   │   ├── FAT
+│   │   ├── SAT
+│   │   └── Handover
 │   └── 03_Construction
+│       ├── Documentation
+│       └── Reports
 └── 07_Administration
     ├── 01_Access_Control
+    │   └── Door_Keys_Reference
     ├── 02_Signage
+    │   ├── Layouts
+    │   ├── Quotes
+    │   └── Templates
     ├── 03_Site_Management
-    └── 04_Permits`;
+    │   ├── Site_Launch_Plan
+    │   └── Property_Management
+    └── 04_Permits
+        ├── E-Permits
+        ├── High_Risk_Works
+        └── Templates`;
 
     function highlightPath(folderStructure, selectedPath) {
     // If there's no path, just return the original structure
