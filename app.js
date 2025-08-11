@@ -223,26 +223,152 @@ document.addEventListener('DOMContentLoaded', function() {
     └── 04_Permits
         ├── E-Permits
         ├── High_Risk_Works
-        └── Templates`;
+        └── Templates
+Site (LHR186)
+├── 01_Technical_Documentation
+│   ├── 01_Drawings
+│   │   ├── Electrical
+│   │   │   ├── SLDs
+│   │   │   ├── MV_System
+│   │   │   ├── LV_System
+│   │   │   ├── Circuit_Schedules
+│   │   │   ├── Discrimination_Studies
+│   │   │   └── Earthing
+│   │   ├── Mechanical
+│   │   │   ├── HVAC
+│   │   │   ├── Cooling_Systems
+│   │   │   ├── Ventilation
+│   │   │   └── Piping
+│   │   ├── Architectural
+│   │   │   ├── Floor_Plans
+│   │   │   ├── General_Arrangement
+│   │   │   └── Room_Layouts
+│   │   ├── Fire_Protection
+│   │   └── Site_External
+│   │       └── Road_Markings_Signage
+│   ├── 02_Equipment_Information
+│   │   ├── Generators
+│   │   │   ├── Specifications
+│   │   │   ├── Engine_Data
+│   │   │   └── Fuel_System
+│   │   ├── Electrical
+│   │   │   ├── Transformers
+│   │   │   ├── Switchgear
+│   │   │   ├── UPS_Systems
+│   │   │   └── Breaker_Settings
+│   │   ├── HVAC_Equipment
+│   │   │   ├── Direct_Air_Optimisers
+│   │   │   ├── CRAC_Units
+│   │   │   ├── AHUs
+│   │   │   └── Fan_Coil_Units
+│   │   ├── Building_Systems
+│   │   │   ├── Lifts
+│   │   │   ├── Loading_Bay
+│   │   │   └── Security_Systems
+│   │   └── Water_Systems
+│   ├── 03_Blade_Room
+│   │   ├── Specifications
+│   │   ├── Controls
+│   │   ├── Operation_Documentation
+│   │   └── Training_Materials
+│   ├── 04_BOM_Inventories
+│   │   ├── Equipment_BOM
+│   │   ├── Critical_Spares
+│   │   ├── Tools
+│   │   └── Chemical_Inventory
+│   └── 05_Reference_Documentation
+│       ├── CSE_LSE_Guidelines
+│       ├── Design_Engineering
+│       └── Asset_Lists
+├── 02_Operations
+│   ├── 01_Procedures
+│   │   ├── SOPs
+│   │   │   ├── Electrical
+│   │   │   ├── Mechanical
+│   │   │   ├── Fire_Systems
+│   │   │   ├── Controls
+│   │   │   └── Water_Systems
+│   │   ├── EOPs
+│   │   │   ├── Electrical
+│   │   │   ├── Mechanical
+│   │   │   ├── Fire_Systems
+│   │   │   ├── Controls
+│   │   │   └── Emergency_Response
+│   │   ├── MOPs
+│   │   └── Work_Instructions
+│   ├── 02_Sequences_Of_Operation
+│   │   ├── HVAC_Systems
+│   │   ├── Electrical_Systems
+│   │   ├── Control_Systems
+│   │   ├── Fire_Systems
+│   │   └── Water_Systems
+│   ├── 03_Training
+│   ├── 04_Daily_Operations
+│   └── 05_MCM
+├── 03_Maintenance
+│   ├── 01_PPM
+│   ├── 02_Equipment_Records
+│   ├── 03_Vendor_Service_Reports
+│   └── 04_Corrective_Maintenance
+├── 04_Compliance
+│   ├── 01_Environmental
+│   ├── 02_Health_and_Safety
+│   ├── 03_Electrical_Compliance
+│   ├── 04_Fire_Systems
+│   └── 05_Water_Compliance
+├── 05_Vendors
+│   ├── 01_Vendor_Information
+│   ├── 02_Vendor_Documentation
+│   └── 03_Vendor_Management
+├── 06_Projects
+│   ├── 01_Active_Projects
+│   ├── 02_Commissioning
+│   └── 03_Construction
+└── 07_Administration
+    ├── 01_Access_Control
+    ├── 02_Signage
+    ├── 03_Site_Management
+    └── 04_Permits`;
 
-    // Function to highlight the path in the folder structure
     function highlightPath(folderStructure, selectedPath) {
     // If there's no path, just return the original structure
     if (!selectedPath) {
         return folderStructure;
     }
     
+    // Normalize path - replace backslashes with forward slashes
+    const normalizedPath = selectedPath.replace(/\\/g, '/').replace(/\/$/, '');
+    
     // Split the path into segments
-    const pathSegments = selectedPath.split('/');
+    const pathSegments = normalizedPath.split('/');
+    
+    // Extract the site from the path
+    const siteMatch = selectedPath.match(/Site\s*\(\s*(LHR\d+)\s*\)/);
+    const selectedSite = siteMatch ? siteMatch[1] : null;
     
     // Process the folder structure line by line
     const lines = folderStructure.split('\n');
     const result = [];
     
+    // Track which site we're currently in
+    let currentSite = null;
+    
     // Process each line
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         const trimmedLine = line.trim();
+        
+        // Check if this line defines a site
+        const siteLineMatch = trimmedLine.match(/^Site\s*\(\s*(LHR\d+)\s*\)$/);
+        if (siteLineMatch) {
+            currentSite = siteLineMatch[1];
+        }
+        
+        // Skip highlighting if we're in a different site than the selected path
+        if (selectedSite && currentSite && currentSite !== selectedSite) {
+            result.push(line);
+            continue;
+        }
         
         // Check if this line is part of our path
         let isPartOfPath = false;
