@@ -143,3 +143,26 @@
   background-color: #007bff;
   color: white;
 }
+
+.header-container {
+  position: relative;
+}
+
+.changelog-link-header {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+}
+
+.changelog-link-header a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.changelog-link-header a:hover {
+  text-decoration: underline;
+}
