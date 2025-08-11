@@ -12,23 +12,30 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header bg-primary text-white">
+                    <div class="card-header bg-primary text-white position-relative">
                         <h2 class="text-center mb-0">Document Management System</h2>
+                        <a href="https://quip-amazon.com/T8DnA3trURR9/Change-log-for-Document-Management-System" 
+                           target="_blank" 
+                           class="changelog-link">
+                            Suggest Folders
+                        </a>
                     </div>
                     <div class="card-body">
+                        <div class="site-selector mb-4">
+                            <div class="d-flex align-items-center">
+                                <label for="siteSelect" class="me-2 mb-0">Select Site:</label>
+                                <div class="btn-group" role="group" aria-label="Site selection">
+                                    <button type="button" class="btn btn-primary site-btn" data-site="LHR086">LHR086</button>
+                                    <button type="button" class="btn btn-outline-primary site-btn" data-site="LHR186">LHR186</button>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="upload-container text-center p-4">
                             <div id="drop-area" class="drop-area mb-4">
                                 <p>Drag & drop files here or</p>
                                 <input type="file" id="fileInput" multiple hidden>
                                 <button id="browseBtn" class="btn btn-outline-primary">Browse Files</button>
-                            </div>
-                            <div class="header-container">
-                                <h1 class="text-center bg-primary text-white p-3 mb-4">Document Management System</h1>
-                                <div class="changelog-link-header">
-                                    <a href="https://quip-amazon.com/T8DnA3trURR9/Change-log-for-Document-Management-System" target="_blank">
-                                        <i class="fas fa-clipboard-list"></i> Suggest New Folders
-                                    </a>
-                                </div>
                             </div>
                             <div id="upload-progress" class="progress mb-3" style="display: none;">
                                 <div class="progress-bar" role="progressbar" style="width: 0%"></div>
@@ -41,16 +48,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="site-selector mb-4">
-        <div class="d-flex align-items-center">
-            <label for="siteSelect" class="mr-2 mb-0">Select Site:</label>
-            <div class="btn-group" role="group" aria-label="Site selection">
-                <button type="button" class="btn btn-outline-primary site-btn" data-site="LHR086">LHR086</button>
-                <button type="button" class="btn btn-outline-primary site-btn" data-site="LHR186">LHR186</button>
             </div>
         </div>
     </div>
