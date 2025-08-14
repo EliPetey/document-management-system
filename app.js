@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const presignedUrlEndpoint = 'https://ya6wa8l0mh.execute-api.us-east-1.amazonaws.com/prod/presigned-url';
     const classifyEndpoint = 'https://ya6wa8l0mh.execute-api.us-east-1.amazonaws.com/prod/classify';
     const moveFileEndpoint = 'https://ya6wa8l0mh.execute-api.us-east-1.amazonaws.com/prod/move-file';
+    const checkDuplicatesEndpoint = 'https://ya6wa8l0mh.execute-api.us-east-1.amazonaws.com/prod/check-duplicates';
     
     // Folder structure definition
     const fullFolderStructure = `Site (LHR086)
@@ -655,23 +656,65 @@ Site (LHR186)
             try {
                 statusElement.textContent = 'Preparing upload...';
                 statusElement.className = 'file-status text-primary';
+
+                // Step 1: Check for duplicates
+            const duplicateResponse = await fetch(checkDuplicatesEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    filename: file.name,
+                    site: currentSite
+                })
+            });
+            
+            if (!duplicateResponse.ok) {
+                throw new Error(`Failed to check for duplicates: ${duplicateResponse.status}`);
+            }
+            
+            const duplicateData = await duplicateResponse.json();
+            
+            // Check for duplicate files
+            if (duplicateData.hasDuplicates && duplicateData.duplicateFiles && duplicateData.duplicateFiles.length > 0) {
+                statusElement.textContent = 'Duplicate detected';
+                statusElement.className = 'file-status text-warning';
                 
-                // Update progress bar
-                progressBar.style.width = `${(i / selectedFiles.length) * 30}%`;
+                // Show duplicate warning and wait for user decision
+                const decision = await showDuplicateWarning(file, duplicateData.duplicateFiles, statusElement, i);
                 
-                // Step 1: Get presigned URL
-                const presignedResponse = await fetch(presignedUrlEndpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        filename: file.name,
-                        contentType: file.type,
-                        site: currentSite  // Include site information
-                    })
-                });
+                if (decision === 'cancel') {
+                    statusElement.textContent = 'Upload cancelled';
+                    statusElement.className = 'file-status text-muted';
+                    continue; // Skip to next file
+                }
+                
+                // User chose to continue, flag as a new version
+                selectedFiles[i].isNewVersion = true;
+                
+                // Update status
+                statusElement.textContent = 'Preparing upload...';
+                statusElement.className = 'file-status text-primary';
+            }
+            
+            // Update progress bar
+            progressBar.style.width = `${(i / selectedFiles.length) * 30}%`;
+            
+            // Step 2: Get presigned URL
+            const presignedResponse = await fetch(presignedUrlEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    filename: file.name,
+                    contentType: file.type,
+                    site: currentSite
+                })
+            });
+                
                 
                 if (!presignedResponse.ok) {
                     throw new Error(`Failed to get upload URL: ${presignedResponse.status}`);
@@ -830,21 +873,21 @@ Site (LHR186)
                 });
                     
             } catch (error) {
-                console.error(`Error processing ${file.name}:`, error);
-                statusElement.textContent = 'Error';
-                statusElement.className = 'file-status text-danger';
-                
-                // Add error details
-                const errorItem = document.createElement('div');
-                errorItem.className = 'mt-1 small text-danger';
-                errorItem.textContent = error.message || 'Failed to process file';
-                statusElement.parentNode.appendChild(errorItem);
-            }
+            console.error(`Error processing ${file.name}:`, error);
+            statusElement.textContent = 'Error';
+            statusElement.className = 'file-status text-danger';
+            
+            // Add error details
+            const errorItem = document.createElement('div');
+            errorItem.className = 'mt-1 small text-danger';
+            errorItem.textContent = error.message || 'Failed to process file';
+            statusElement.parentNode.appendChild(errorItem);
         }
-        
-        // Complete progress bar
-        progressBar.style.width = '100%';
-    });
+    }
+    
+    // Complete progress bar
+    progressBar.style.width = '100%';
+});
     
     // Handle confirmation buttons
     document.addEventListener('click', async function(e) {
