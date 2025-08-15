@@ -211,16 +211,56 @@ document.addEventListener('DOMContentLoaded', function() {
 │   ├── 01_Vendor_Information
 │   │   ├── Contact_Lists
 │   │   └── Escalation_Procedures
-│   ├── 02_Vendor_Documentation
-│   │   └── [By_Vendor_Name]
-│   │       ├── Competencies
-│   │       ├── RAMS
-│   │       ├── Service_Reports
-│   │       └── Call-out_Records
+│   │
 │   └── 03_Vendor_Management
-│       ├── Onboarding
-│       ├── Contracts
-│       └── Purchase_Orders
+│       ├── The Office Works
+│       │   ├── Onboarding
+│       │   ├── Contracts
+│       │   ├── Purchase_Orders
+│       │   ├── Competencies
+│       │   ├── RAMS
+│       │   ├── Service_Reports
+│       │   └── Call-out_Records
+│       ├── Phosters
+│       │   ├── Onboarding
+│       │   ├── Contracts
+│       │   ├── Purchase_Orders
+│       │   ├── Competencies
+│       │   ├── RAMS
+│       │   ├── Service_Reports
+│       │   └── Call-out_Records
+│       ├── Gratte_Brothers
+│       │   ├── Onboarding
+│       │   ├── Contracts
+│       │   ├── Purchase_Orders
+│       │   ├── Competencies
+│       │   ├── RAMS
+│       │   ├── Service_Reports
+│       │   └── Call-out_Records
+│       ├── Franke
+│       │   ├── Onboarding
+│       │   ├── Contracts
+│       │   ├── Purchase_Orders
+│       │   ├── Competencies
+│       │   ├── RAMS
+│       │   ├── Service_Reports
+│       │   └── Call-out_Records
+│       ├── Diversified
+│       │   ├── Onboarding
+│       │   ├── Contracts
+│       │   ├── Purchase_Orders
+│       │   ├── Competencies
+│       │   ├── RAMS
+│       │   ├── Service_Reports
+│       │   └── Call-out_Records
+│       └── Bladeroom
+│           ├── Onboarding
+│           ├── Contracts
+│           ├── Purchase_Orders
+│           ├── Competencies
+│           ├── RAMS
+│           ├── Service_Reports
+│           └── Call-out_Records
 ├── 06_Projects
 │   ├── 01_Active_Projects
 │   │   └── [Project_Name]
@@ -417,16 +457,56 @@ Site (LHR186)
 │   ├── 01_Vendor_Information
 │   │   ├── Contact_Lists
 │   │   └── Escalation_Procedures
-│   ├── 02_Vendor_Documentation
-│   │   └── [By_Vendor_Name]
-│   │       ├── Competencies
-│   │       ├── RAMS
-│   │       ├── Service_Reports
-│   │       └── Call-out_Records
+│   │
 │   └── 03_Vendor_Management
-│       ├── Onboarding
-│       ├── Contracts
-│       └── Purchase_Orders
+│       ├── The Office Works
+│       │   ├── Onboarding
+│       │   ├── Contracts
+│       │   ├── Purchase_Orders
+│       │   ├── Competencies
+│       │   ├── RAMS
+│       │   ├── Service_Reports
+│       │   └── Call-out_Records
+│       ├── Phosters
+│       │   ├── Onboarding
+│       │   ├── Contracts
+│       │   ├── Purchase_Orders
+│       │   ├── Competencies
+│       │   ├── RAMS
+│       │   ├── Service_Reports
+│       │   └── Call-out_Records
+│       ├── Gratte_Brothers
+│       │   ├── Onboarding
+│       │   ├── Contracts
+│       │   ├── Purchase_Orders
+│       │   ├── Competencies
+│       │   ├── RAMS
+│       │   ├── Service_Reports
+│       │   └── Call-out_Records
+│       ├── Franke
+│       │   ├── Onboarding
+│       │   ├── Contracts
+│       │   ├── Purchase_Orders
+│       │   ├── Competencies
+│       │   ├── RAMS
+│       │   ├── Service_Reports
+│       │   └── Call-out_Records
+│       ├── Diversified
+│       │   ├── Onboarding
+│       │   ├── Contracts
+│       │   ├── Purchase_Orders
+│       │   ├── Competencies
+│       │   ├── RAMS
+│       │   ├── Service_Reports
+│       │   └── Call-out_Records
+│       └── Bladeroom
+│           ├── Onboarding
+│           ├── Contracts
+│           ├── Purchase_Orders
+│           ├── Competencies
+│           ├── RAMS
+│           ├── Service_Reports
+│           └── Call-out_Records
 ├── 06_Projects
 │   ├── 01_Active_Projects
 │   │   └── [Project_Name]
